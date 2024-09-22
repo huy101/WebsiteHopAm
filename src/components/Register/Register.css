@@ -1,0 +1,58 @@
+.Login-form{
+    background-color: #fff;
+    padding: 20px;
+    margin: 0 auto;
+    max-width: 450px;
+    border: 1px solid silver;
+}
+.top{
+    position: sticky;
+  top: 0;
+  width: 100%; /* Đảm bảo navbar chiếm toàn bộ chiều ngang trang */
+  background-color: #f8f9fa; /* Màu nền của navbar, có thể thay đổi theo ý muốn */
+  z-index: 1000; 
+}
+.login{
+    margin-top: 50px;
+    padding: 0;
+}
+.Login-form{
+    
+border-radius: 10px;
+box-sizing: border-box;
+background-color: #fff;
+padding: 20px;
+margin: 0 auto;
+max-width: 450px;
+border: 1px solid silver;
+}
+legend {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    margin-bottom: .5rem;
+    font-size: 1.5rem;
+    line-height: inherit;
+    color: inherit;
+    white-space: normal;
+}
+.error_msg,
+.success_msg {
+	width: 370px;
+	padding: 15px;
+	margin: 5px 0;
+	font-size: 14px;
+	background-color: #f34646;
+	color: white;
+	border-radius: 5px;
+	text-align: center;
+}
+
+.success_msg {
+	background-color: #5cdd5c;
+}
+
+
+
+

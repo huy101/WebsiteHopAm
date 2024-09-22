@@ -1,0 +1,54 @@
+.body{
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    text-align: left;
+    
+}
+
+
+
+
+.list_song{
+    padding: 0 10px 10px 10px;
+}
+.col-12{
+    position: relative;
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+.h5{
+    padding: 0 0 10px;
+    color: #777;
+    font-size: 1.25rem;
+}
+.fas{
+    font-weight: 900;
+}
+.a{
+    color: #007bff;
+    text-decoration: none;
+    background-color: transparent;
+}
+.small {
+    font-size: 80%;
+    font-weight: 400;
+}
+.chord {
+    color: #df495b;
+}.text-muted {
+    color: #6c757d !important;
+}
+.csinger {
+    color: #97bee2;
+}
+.mx-auto{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.ml-auto, .mx-auto {
+    margin-left: auto !important;
+}

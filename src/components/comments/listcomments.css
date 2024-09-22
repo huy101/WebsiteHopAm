@@ -1,0 +1,25 @@
+.ct-box {
+    margin: 0 0 15px;
+    padding: 12px;
+    background-color: #fff;
+}
+a {
+    color: #007bff;
+    text-decoration: none;
+    background-color: transparent;
+}
+.text-muted {
+    color: #6c757d !important;
+}
+small {
+    font-size: 80%;
+    font-weight: 400;
+}
+.row {
+  
+    display: flex;
+   
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+}

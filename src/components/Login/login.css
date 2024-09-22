@@ -1,0 +1,28 @@
+.Login-form{
+    background-color: #fff;
+    padding: 20px;
+    margin: 0 auto;
+    max-width: 450px;
+    border: 1px solid silver;
+}
+.top{
+    position: sticky;
+  top: 0;
+  width: 100%; /* Đảm bảo navbar chiếm toàn bộ chiều ngang trang */
+  background-color: #f8f9fa; /* Màu nền của navbar, có thể thay đổi theo ý muốn */
+  z-index: 1000; 
+}
+.login{
+    margin-top: 50px;
+    padding: 0;
+}
+.Login-form{
+    
+border-radius: 10px;
+box-sizing: border-box;
+background-color: #fff;
+padding: 20px;
+margin: 0 auto;
+max-width: 450px;
+border: 1px solid silver;
+}
