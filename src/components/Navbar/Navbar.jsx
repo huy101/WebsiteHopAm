@@ -55,6 +55,7 @@ function NavbarTop() {
        
        <div className="contain">
          <i className="fas fa-user fa-lg"></i>
+         
          <NavDropdown title="Tài khoản" id="basic-nav-dropdown">
            <NavDropdown.Item as={Link} to="/login">Đăng nhập</NavDropdown.Item>
            <NavDropdown.Item as={Link} to="/register">Đăng ký</NavDropdown.Item>
