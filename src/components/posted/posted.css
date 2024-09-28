@@ -1,0 +1,9 @@
+.contain_posted{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+    padding-top: 1rem !important;
+    margin: 0 190px 0 190px ;
+}

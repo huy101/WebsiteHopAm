@@ -1,0 +1,23 @@
+
+  
+  .pagination .page-link a {
+    color: #007bff; /* Màu cho các trang không phải là trang hiện tại */
+    text-decoration: none; /* Loại bỏ gạch chân */
+  }
+  
+  .pagination .page-link a:hover {
+    color: #0056b3; /* Màu khi di chuột qua */
+  }
+  
+  .pagination .page-item {
+    margin-right: 5px;
+  }
+  
+  .pagging {
+    margin-top: 20px;
+  }
+  .pagination .page-item.active .page-link a {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}

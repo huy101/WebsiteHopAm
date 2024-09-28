@@ -7,9 +7,9 @@ import NavbarTop from '../Navbar/Navbar';
 
 function Register() {
   const [data, setData] = useState({
-    email: '',
-    username: '',
-    password: '',
+    email: 'hoanghuy1282003@gmail.com',
+    username: 'aaa',
+    password: 'Aa@3333333333',
   });
 
   const [errors, setErrors] = useState({});
@@ -62,8 +62,6 @@ function Register() {
     }));
   };
 
-
-  
   return (
     <>
       <div className="top">
@@ -72,10 +70,11 @@ function Register() {
       <div className="login">
         <div className="Login-form">
           <legend>Đăng ký thành viên</legend>
-          <Form onSubmit={handleSubmit}>
+          <Form onSubmit={handleSubmit} >
             <Form.Group className="mb-3">
               <Form.Label>Email</Form.Label>
               <Form.Control
+                
                 type="email"
                 name="email"
                 onChange={handleChange}

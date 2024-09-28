@@ -24,20 +24,43 @@ function NavbarTop() {
        <div className="contain">
          <i className="fas fa-book fa-lg"></i>
          <NavDropdown title="Thể Loại" id="basic-nav-dropdown">
-           <NavDropdown.Item href="#action/3.1">Nhạc vàng</NavDropdown.Item>
+           <NavDropdown.Item href="#">Nhạc vàng</NavDropdown.Item>
          </NavDropdown>
        </div>
        <div className="contain">
          <i className="fas fa-guitar fa-lg"></i>
          <NavDropdown title="Điệu" id="basic-nav-dropdown">
-           <NavDropdown.Item href="#action/3.1">Chachacha</NavDropdown.Item>
+           <NavDropdown.Item  href="">Chachacha</NavDropdown.Item>
          </NavDropdown>
        </div>
+       <div className="message">
+       <li class="nav-item dropdown">
+<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+<i class="fas fa-envelope fa-fw"></i>
+</a>
+<ul class="dropdown-menu dropdown-messages">
+<li>
+<div class="text-center">Chưa có tin nhắn nào</div>
+</li>
+<div class="dropdown-divider"></div>
+<li class="text-center">
+<a href="https://hopamviet.vn/msg.html">
+<strong>Tất cả tin nhắn</strong>
+<i class="fas fa-angle-right"></i>
+</a>
+</li>
+</ul>
+</li>
+       </div>
+       
        <div className="contain">
          <i className="fas fa-user fa-lg"></i>
          <NavDropdown title="Tài khoản" id="basic-nav-dropdown">
            <NavDropdown.Item as={Link} to="/login">Đăng nhập</NavDropdown.Item>
            <NavDropdown.Item as={Link} to="/register">Đăng ký</NavDropdown.Item>
+           <NavDropdown.Item as={Link} to="/add"><i class="fas fa-plus"></i> Thêm bài hát</NavDropdown.Item>
+           <NavDropdown.Item as={Link} to="/posted">Bài hát tôi đã đăng</NavDropdown.Item>
+           <NavDropdown.Item as={Link} to="/liked">Bài hát yêu thích</NavDropdown.Item>
          </NavDropdown>
        </div>
      </Nav>
