@@ -30,7 +30,7 @@ router.post("/", async (req, res) => {
 					userId: user._id,
 					token: crypto.randomBytes(32).toString("hex"),
 				}).save();
-				const url = `${process.env.BASE_URL}users/${user.id}/verify/${token.token}`;
+				const url = `${process.env.BASE_URL}api/users/${user.id}/verify/${token.token}`;
 				await sendEmail(user.email, "Verify Email", url);
 			}
 
@@ -46,12 +46,12 @@ router.post("/", async (req, res) => {
 	}
 });
 
-const validate = (data) => {
-	const schema = joi.object({
-		email: joi.string().email().required().label("Email"),
-		password: joi.string().required().label("Password"),
-	});
-	return schema.validate(data);
-};
+// const validate = (data) => {
+// 	const schema = joi.object({
+// 		email: joi.string().email().required().label("Email"),
+// 		password: joi.string().required().label("Password"),
+// 	});
+// 	return schema.validate(data);
+// };
 
 module.exports = router;

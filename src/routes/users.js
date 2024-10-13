@@ -11,7 +11,7 @@ router.post("/", async (req, res) => {
 		const BASE_URL = process.env.BASE_URL;
 
 
-		const { error } = validate(req.body);
+		const { error } = req.body //validate(req.body);
 
 
 		console.log(error)
@@ -35,7 +35,7 @@ router.post("/", async (req, res) => {
 			userId: user._id,
 			token: crypto.randomBytes(32).toString("hex"),
 		}).save();
-		const url = `${BASE_URL}users/${user.id}/verify/${token.token}`;
+		const url = `${BASE_URL}api/users/${user.id}/verify/${token.token}`;
 		console.log(url)
 		await sendEmail(user.email, "Verify Email", url);
 
@@ -65,9 +65,11 @@ router.get("/:id/verify/:token", async (req, res) => {
 		if (!token) return res.status(400).send({ message: "Invalid link" });
 		   // Update the verified field to true for the given user ID
 		const result = await User.updateOne({ _id: user._id }, { verified: true });
-		await token.remove();
+		
 
 		res.status(200).send({ message: "Email verified successfully" });
+		await token.remove();
+		
 	} catch (error) {
 		res.status(500).send({ message: JSON.stringify(error) });
 	}

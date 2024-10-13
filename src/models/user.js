@@ -17,13 +17,13 @@ userSchema.methods.generateAuthToken = function () {
 
 const User = mongoose.model("user", userSchema);
 
-const validate = (data) => {
-	const schema = joi.object({
-		username: joi.string().required().label("User name"),
-		email: joi.string().email().required().label("Email"),
-		password: passwordComplexity().required().label("Password"),
-	});
-	return schema.validate(data);
-};
+// const validate = (data) => {
+// 	const schema = joi.object({
+// 		username: joi.string().required().label("User name"),
+// 		email: joi.string().email().required().label("Email"),
+// 		password: passwordComplexity().required().label("Password"),
+// 	});
+// 	return schema.validate(data);
+// };
 
-module.exports = { User, validate };
+module.exports = { User };
