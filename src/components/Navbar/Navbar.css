@@ -11,6 +11,11 @@
 .contain{
   display: flex;
   align-items: center;
+  
+}
+.row{
+  display: flex;
+  flex-direction: row;
 }
  .fas {
   font-weight: 900;

@@ -7,10 +7,13 @@ import LyricsSong from './components/Lyrics/LyricsSong';
 import AddSong from './components/AddNewSong/AddSong';
 import Posted from './components/posted/Posted';
 import Liked from './components/liked/Liked';
+import { Provider } from 'react-redux';
+import store from './redux/store';
 
 function App() {
   return (
-    <Router>
+    <Provider store={store}>
+       <Router>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -20,8 +23,12 @@ function App() {
         <Route path="/posted" element={<Posted />} />
         <Route path="/liked" element={<Liked />} />
         
+
+        
       </Routes>
     </Router>
+    </Provider>
+   
   );
 }
 

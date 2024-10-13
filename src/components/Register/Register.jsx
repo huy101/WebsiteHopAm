@@ -7,9 +7,9 @@ import NavbarTop from '../Navbar/Navbar';
 
 function Register() {
   const [data, setData] = useState({
-    email: 'hoanghuy1282003@gmail.com',
-    username: 'aaa',
-    password: 'Aa@3333333333',
+    email: '',
+    username: '',
+    password: '',
   });
 
   const [errors, setErrors] = useState({});

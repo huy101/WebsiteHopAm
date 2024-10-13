@@ -6,7 +6,6 @@ import ListMonth from '../month/ListMonth';
 import ListSong from '../ListSong/ListSong';
 import Post from '../TuLieu/Post';
 import ListComments from '../comments/ListComment';
-import AddSong from '../AddNewSong/AddSong';
 
 
 
@@ -42,7 +41,6 @@ const Home = () => {
       </div>
       <div className="bottom">
         <ListComments/>
-        <AddSong/>
       </div>
     </>
   );

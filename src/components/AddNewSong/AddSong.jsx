@@ -1,125 +1,181 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchGenres } from '../../redux/genreSlice'; // Import the async thunk for genres
+import { fetchRhythms } from '../../redux/rhythmSlice'; // Import the async thunk for rhythms
+import { addSong } from '../../redux/addAction';
 import NavbarTop from '../Navbar/Navbar';
+import axios from 'axios';
 
 const AddSong = () => {
+  const dispatch = useDispatch();
+  const genres = useSelector((state) => state.genres);
+  const rhythms = useSelector((state) => state.rhythms);
+  const [selectedGenre, setSelectedGenre] = useState('');
+  const [selectedRhythm, setSelectedRhythm] = useState('');
+  const [title, setTitle] = useState('');
+  const [artist, setArtist] = useState('');
+  const [tone, setTone] = useState('C'); // Default tone
+  const [lyrics, setLyrics] = useState('');
+
+  useEffect(() => {
+    dispatch(fetchGenres()); // Fetch genres when the component mounts
+    dispatch(fetchRhythms()); // Fetch rhythms when the component mounts
+  }, [dispatch]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const newSong = {
+      title,
+      artist,
+      genre: selectedGenre,
+      rhythm: selectedRhythm,
+      tone,
+      lyrics: [
+        {
+          verse: lyrics,
+          chords: extractChords(lyrics),
+        },
+      ],
+    };
+    dispatch(addSong(newSong)); // Dispatch action to add song
+  };
+
+  const extractChords = (lyrics) => {
+    const regex = /\[(.*?)\]/g;
+    let matches = [];
+    let match;
+    while ((match = regex.exec(lyrics)) !== null) {
+      matches.push(match[1]);
+    }
+    return matches;
+  };
+
   return (
-    <><div className="top">
-        <NavbarTop/>
-    </div>
-    <div className="container">
-      <h3>Thêm bài hát mới</h3>
-      <form>
-        {/* Row 1 */}
-        <div className="row mb-3">
-          <div className="col-12">
-            <div className="form-group">
-              <label htmlFor="title1">Tên bài hát (*)</label>
-              <input type="text" name="title1" className="form-control" />
-            </div>
-          </div>
-        </div>
-
-        {/* Row 2 */}
-        <div className="row mb-3">
-          <div className="col-md-3">
-            <div className="form-group">
-              <label htmlFor="composer1">Nhạc sĩ 1</label>
-              <input type="text" name="composer1" id="composer1" className="form-control author" />
-              <span className="help-block">
-                <em>Nhạc sĩ sáng tác ca khúc</em>
-              </span>
-            </div>
-          </div>
-
-          <div className="col-md-3">
-            <div className="form-group">
-              <label htmlFor="composer2">Nhạc sĩ 2</label>
-              <input type="text" name="composer2" id="composer2" className="form-control author" />
-              <span className="help-block">
-                <em>Nhạc sĩ khác cùng sáng tác</em>
-              </span>
-            </div>
-          </div>
-
-          <div className="col-md-3">
-            <div className="form-group">
-              <label htmlFor="composer3">Tác giả thơ</label>
-              <input type="text" name="composer3" id="composer3" className="form-control author" />
-              <span className="help-block">
-                <em>Tên tác giả thơ (nếu có)</em>
-              </span>
-            </div>
-          </div>
-
-          <div className="col-md-3">
-            <div className="form-group">
-              <label htmlFor="composer4">Lời Việt</label>
-              <input type="text" name="composer4" id="composer4" className="form-control author" autoComplete="off" />
-              <span className="help-block">
-                <em>Đối với nhạc Ngoại</em>
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Add more form rows here */}
-        <div className="row mb-3">
-      {/* Thể loại */}
-      <div className="col-md-4">
-        <div className="form-group">
-          <label htmlFor="category">Thể loại</label>
-          <select name="category" className="form-control">
-            <option value="1">Nhạc Vàng</option>
-            <option value="2">Nhạc Trữ tình</option>
-            <option value="3" selected>Nhạc Trẻ</option>
-            <option value="4">Nhạc Quê hương</option>
-            <option value="5">Nhạc Ngoại lời Việt</option>
-            <option value="6">Nhạc Đỏ</option>
-            <option value="7">Nhạc Dân ca</option>
-            <option value="8">Nhạc Quốc tế</option>
-            <option value="9">Nhạc Học trò</option>
-            <option value="10">Nhạc Thiếu nhi</option>
-            <option value="11">Nhạc Thánh ca</option>
-            <option value="12">Nhạc Phật giáo</option>
-            <option value="13">Nhạc Chế - Vui</option>
-          </select>
-        </div>
+    <>
+      <div className="top">
+        <NavbarTop />
       </div>
-
-      {/* Năm sáng tác */}
-      <div className="col-md-4">
-        <div className="form-group">
-          <label htmlFor="year">Năm sáng tác (nếu biết)</label>
-          <input type="text" name="year" id="year" className="form-control" />
-        </div>
-      </div>
-
-      {/* Tone chủ bài hát */}
-        <div className="col-md-4">
-            <div className="form-group">
-            <label htmlFor="tone">Tone chủ bài hát</label>
-            <input type="text" name="tone" id="tone" className="form-control" />
+      <div className="container">
+        <h3>Thêm bài hát mới</h3>
+        <form onSubmit={handleSubmit}>
+          {/* Your form inputs remain unchanged */}
+          <div className="row mb-3">
+            <div className="col-12">
+              <div className="form-group">
+                <label htmlFor="title1">Tên bài hát (*)</label>
+                <input
+                  type="text"
+                  name="title1"
+                  className="form-control"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                />
+              </div>
             </div>
-        </div>
-        </div>
+          </div>
+          <div className="row mb-3">
+            <div className="col-md-3">
+              <div className="form-group">
+                <label htmlFor="composer3">Tác giả</label>
+                <input
+                  type="text"
+                  name="composer3"
+                  className="form-control author"
+                  value={artist}
+                  onChange={(e) => setArtist(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Genre Selection */}
+          <div className="row mb-3">
+            <div className="col-md-4">
+              <div className="form-group">
+                <label htmlFor="genre">Thể loại</label>
+                <select
+                  name="genre"
+                  className="form-control"
+                  value={selectedGenre}
+                  onChange={(e) => setSelectedGenre(e.target.value)}
+                  required
+                >
+                  <option value="">Chọn thể loại</option>
+                  {genres.map((genre) => (
+                    <option key={genre._id} value={genre._id}>
+                      {genre.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Rhythm Selection */}
+            <div className="col-md-4">
+              <div className="form-group">
+                <label htmlFor="rhythm">Điệu nhạc</label>
+                <select
+                  name="rhythm"
+                  className="form-control"
+                  value={selectedRhythm}
+                  onChange={(e) => setSelectedRhythm(e.target.value)}
+                  required
+                >
+                  <option value="">Chọn điệu nhạc</option>
+                  {rhythms.map((rhythm) => (
+                    <option key={rhythm._id} value={rhythm._id}>
+                      {rhythm.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Tone Selection */}
+            <div className="col-md-4">
+              <div className="form-group">
+                <label htmlFor="tone">Tone chủ bài hát</label>
+                <select
+                  name="tone"
+                  className="form-control"
+                  value={tone}
+                  onChange={(e) => setTone(e.target.value)}
+                >
+                  <option value="C">C</option>
+                  <option value="D">D</option>
+                  <option value="E">E</option>
+                  <option value="F">F</option>
+                  <option value="G">G</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Lyrics Section */}
+          <div className="form-group">
+            <label htmlFor="lyrics">Lời và hợp âm (*)</label>
+            <textarea
+              rows="10"
+              name="lyrics"
+              id="lyrics"
+              className="form-control"
+              value={lyrics}
+              onChange={(e) => setLyrics(e.target.value)}
+              required
+            ></textarea>
+            <small className="text-muted">
+              Hợp âm phải bỏ trong dấu ngoặc vuông []. Thông tin ca sĩ thể hiện và link bài hát để ở dưới cùng.
+            </small>
+          </div>
+
+          {/* Submit Button */}
+          <button type="submit" className="btn btn-primary">
+            Đăng bài
+          </button>
         </form>
-        <div className="form-group">
-      <label htmlFor="lyric">Lời và hợp âm (*)</label>
-      <textarea
-        rows="10"
-        cols="3"
-        name="lyric"
-        id="lyric"
-        className="form-control"
-        required
-      ></textarea>
-      <span className="help-block text-danger">
-        <em>Hợp âm phải bỏ trong dấu ngoặc vuông []. Thông tin ca sĩ thể hiện và link bài hát để ở dưới cùng</em>
-      </span>
-    </div>  
-    </div>
+      </div>
     </>
-    
   );
 };
 
