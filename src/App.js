@@ -9,6 +9,7 @@ import Posted from './components/posted/Posted';
 import Liked from './components/liked/Liked';
 import { Provider } from 'react-redux';
 import store from './redux/store';
+import ListSong from './components/ListSong/ListSong';
 
 function App() {
   return (
@@ -18,10 +19,13 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/Register" element={<Register />} />
-        <Route path="/chord" element={<LyricsSong />} />
+        <Route path="/chord/:id" element={<LyricsSong />} />
         <Route path="/add" element={<AddSong />} />
         <Route path="/posted" element={<Posted />} />
         <Route path="/liked" element={<Liked />} />
+        <Route path="/list/:genreId" element={<ListSong />} />
+        <Route path="/list/:rhythmId" element={<ListSong />} />
+        {/* <Route path="/list" element={<ListSong />} /> */}
         
 
         

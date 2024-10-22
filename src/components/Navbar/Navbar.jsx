@@ -1,21 +1,51 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchGenres } from '../../redux/genreSlice'; 
+import { fetchRhythms } from '../../redux/rhythmSlice'; 
+import { logout } from '../../redux/authActions'; 
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../../redux/authActions'; // Ensure you import the logout action
+import { Form, Button, Row, Col } from 'react-bootstrap'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Navbar.css';
-import { Form, Button, Row, Col } from 'react-bootstrap'; // Import Form, Button, Row, Col
+import { setType } from '../../redux/types';
 
 function NavbarTop() {
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState('');
-
+  const navigate = useNavigate(); // Use useNavigate instead of Navigate
+  // Get genres and rhythms from Redux state
+  const genres = useSelector((state) => state.genres); 
+  const rhythms = useSelector((state) => state.rhythms);
+  const { childTypeId, type } = useSelector((state) => state.types);
+  
   // Get auth state from Redux
   const { userInfo, userToken } = useSelector((state) => state.auth);
+
+  // Fetch genres and rhythms when the component mounts
+  useEffect(() => {
+    dispatch(fetchGenres()); // Fetch genres
+    dispatch(fetchRhythms()); // Fetch rhythms
+  }, [dispatch]);
+
+  const handleClickGenre = (genre) => {
+    dispatch(setType({
+      childTypeId: genre._id,
+      type: "genre",
+    }));
+    navigate(`/list/${genre._id}`); // Navigate after setting type
+  };
+
+  const handleClickRhythm = (rhythm) => {
+    dispatch(setType({
+      childTypeId: rhythm._id,
+      type: "rhythm",
+    }));
+    navigate(`/list/${rhythm._id}`); // Navigate after setting type
+  };
 
   const handleLogout = () => {
     // Clear userToken from localStorage and dispatch logout action
@@ -27,7 +57,7 @@ function NavbarTop() {
     e.preventDefault();
     // Handle search logic here, e.g., redirect to search results page
     console.log('Searching for:', searchQuery);
-    // Redirect to a search results page or perform a search action
+    // Navigate to search results if needed
   };
 
   return (
@@ -40,16 +70,43 @@ function NavbarTop() {
             <Nav className="me-auto">
               <div className="contain">
                 <i className="fas fa-book fa-lg"></i>
-                <NavDropdown title="Thể Loại" id="basic-nav-dropdown">
-                  <NavDropdown.Item href="#">Nhạc vàng</NavDropdown.Item>
+                {/* Genre Dropdown */}
+                <NavDropdown title="Thể loại" id="basic-nav-dropdown">
+                  {genres.length > 0 ? (
+                    genres.map((genre) => (
+                      <NavDropdown.Item
+                        key={genre._id}
+                        onClick={() => handleClickGenre(genre)} // Wrap the function call
+                      >
+                        {genre.name}
+                      </NavDropdown.Item>
+                    ))
+                  ) : (
+                    <NavDropdown.Item disabled>Không có thể loại</NavDropdown.Item>
+                  )}  
                 </NavDropdown>
               </div>
+
+              {/* Rhythm Dropdown */}
               <div className="contain">
                 <i className="fas fa-guitar fa-lg"></i>
                 <NavDropdown title="Điệu" id="basic-nav-dropdown">
-                  <NavDropdown.Item href="">Chachacha</NavDropdown.Item>
+                  {rhythms.length > 0 ? (
+                    rhythms.map((rhythm) => (
+                      <NavDropdown.Item
+                        key={rhythm._id}
+                        onClick={() => handleClickRhythm(rhythm)} // Wrap the function call
+                      >
+                        {rhythm.name}
+                      </NavDropdown.Item>
+                    ))
+                  ) : (
+                    <NavDropdown.Item disabled>Không có điệu</NavDropdown.Item>
+                  )}
                 </NavDropdown>
               </div>
+
+              {/* Messages Dropdown */}
               <div className="message">
                 <li className="nav-item dropdown">
                   <a className="nav-link dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
@@ -70,6 +127,8 @@ function NavbarTop() {
                 </li>
               </div>
             </Nav>
+
+            {/* Account Dropdown */}
             <Nav className="me-auto">
               <div className="contain">
                 <NavDropdown title={userInfo ? userInfo.name : "Tài khoản"} id="basic-nav-dropdown">
@@ -83,7 +142,6 @@ function NavbarTop() {
                     <>
                       <NavDropdown.Item as={Link} to="/login">Đăng nhập</NavDropdown.Item>
                       <NavDropdown.Item as={Link} to="/register">Đăng ký</NavDropdown.Item>
-                      <NavDropdown.Item onClick={handleLogout}>Đăng xuất</NavDropdown.Item>
                     </>
                   )}
                 </NavDropdown>

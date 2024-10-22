@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchGenres } from '../../redux/genreSlice'; // Import the async thunk for genres
 import { fetchRhythms } from '../../redux/rhythmSlice'; // Import the async thunk for rhythms
-import { addSong } from '../../redux/addAction';
+import addSong from '../../redux/addAction';
 import NavbarTop from '../Navbar/Navbar';
 import axios from 'axios';
 

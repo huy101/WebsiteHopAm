@@ -3,7 +3,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 // Thunk action để thêm bài hát
-export const addSong = createAsyncThunk(
+  const addSong = createAsyncThunk(
   'songs/addSong',
   async (newSong, { rejectWithValue }) => {
     try {
@@ -19,3 +19,5 @@ export const addSong = createAsyncThunk(
     }
   }
 );
+
+export default addSong

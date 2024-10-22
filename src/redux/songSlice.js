@@ -1,11 +1,8 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { createSlice} from '@reduxjs/toolkit';
 
+import addSong from './addAction'
 // Thunk để gửi yêu cầu thêm bài hát đến API
-export const addSong = createAsyncThunk('songs/addSong', async (newSong) => {
-    const response = await axios.post('/api/songs', newSong);
-    return response.data; // API trả về thông tin bài hát đã thêm
-});
+import { fetchSongById } from './fetchSongAction';
 
 // Khởi tạo slice
 const songSlice = createSlice({
@@ -34,7 +31,20 @@ const songSlice = createSlice({
             .addCase(addSong.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message;
-            });
+            })
+           
+            .addCase(fetchSongById.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+              })
+              .addCase(fetchSongById.fulfilled, (state, action) => {
+                state.song = action.payload; // Cập nhật bài hát
+                state.loading = false;
+              })
+              .addCase(fetchSongById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message; // Xử lý lỗi
+              })
     },
 });
 

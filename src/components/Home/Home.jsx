@@ -2,18 +2,18 @@ import React from 'react';
 import NavbarTop from '../Navbar/Navbar';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import './home.css';
-import ListMonth from '../month/ListMonth';
+
 import ListSong from '../ListSong/ListSong';
 import Post from '../TuLieu/Post';
 import ListComments from '../comments/ListComment';
 
 
 
-const Home = () => {
+const Home = ( showNavbar=false) => {
   return (
     <>
       <div className="top">
-        <NavbarTop />
+        <NavbarTop  />
       </div>
       
       <div className="center">
@@ -24,7 +24,7 @@ const Home = () => {
 
           <div className="center_ct2">
             <div className="rowright">
-              <ListSong />
+              <ListSong showNavbar={false}/>
               <div className="mx-auto pt-2">
                 <a href="https://hopamviet.vn/chord/latest/10.html" className="btn btn-outline-primary btn-sm">
                   Xem thêm
@@ -34,7 +34,7 @@ const Home = () => {
             </div>
 
             <div className="month">
-              <ListMonth />
+             
             </div>
           </div>
         </div>

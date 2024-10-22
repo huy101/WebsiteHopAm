@@ -3,17 +3,17 @@ import React from "react";
 const Post = () => {
     return (
         <>
-            <div class="ct-box">
-                <div class="ct-heading">
+            <div className="ct-box">
+                <div className="ct-heading">
                     <a href="https://hopamviet.vn/info/list_related.html">TƯ LIỆU</a>{" "}
-                    <a href="https://hopamviet.vn/info/list_related.html" class="float-right">
+                    <a href="https://hopamviet.vn/info/list_related.html" className="float-right">
                         <em>
-                            Xem thêm <i class="fa fa-arrow-right"></i>
+                            Xem thêm <i className="fa fa-arrow-right"></i>
                         </em>{" "}
                     </a>
                 </div>
-                <div class="row p-right">
-                    <div class="col-lg-6 col-sm-12" style={{ paddingBottom: "18px" }}>
+                <div className="row p-right">
+                    <div className="col-lg-6 col-sm-12" style={{ paddingBottom: "18px" }}>
                         <a
                             href="https://hopamviet.vn/info/related/387/emmanuelle-1974-film.html"
                             title="Emmanuelle (1974 film)"
@@ -23,14 +23,14 @@ const Post = () => {
                                     src="https://hopamviet.vn/assets/images/editor/thumb/em_thumb.jpg"
                                     width="120"
                                     height="80"
-                                    class="float-left mr-3"
+                                    className="float-left mr-3"
                                     alt="Emmanuelle (1974 film)"
                                 ></img>
                             </div>
                             <div>Emmanuelle (1974 film)</div>
                         </a>
                     </div>
-                    <div class="col-lg-6 col-sm-12" style={{ paddingBottom: "18px" }}>
+                    <div className="col-lg-6 col-sm-12" style={{ paddingBottom: "18px" }}>
                         <a
                             href="https://hopamviet.vn/info/related/386/nhac-si-quoc-dung-qua-doi.html"
                             title="Nhạc sĩ Quốc Dũng qua đời"
@@ -41,7 +41,7 @@ const Post = () => {
                                     src="/img/C/CTT1.png"
                                     width="120"
                                     height="80"
-                                    class="float-left mr-3"
+                                    className="float-left mr-3"
                                     alt="Nhạc sĩ Quốc Dũng qua đời"
                                 ></img>
                             </div>
@@ -49,8 +49,8 @@ const Post = () => {
                         </a>
                     </div>
                 </div>
-                <div class="row p-right">
-                    <div class="col-lg-6 col-sm-12" style={{ paddingBottom: "18px" }}>
+                <div className="row p-right">
+                    <div className="col-lg-6 col-sm-12" style={{ paddingBottom: "18px" }}>
                         <a
                             href="https://hopamviet.vn/info/related/385/ca-khuc-dao-nuong.html"
                             title="Ca khúc Đào nương"
@@ -60,14 +60,14 @@ const Post = () => {
                                     src="https://hopamviet.vn/assets/images/editor/thumb/dao_thumb.jpg"
                                     width="120"
                                     height="80"
-                                    class="float-left mr-3"
+                                    className="float-left mr-3"
                                     alt="Ca khúc Đào nương"
                                 ></img>
                             </div>
                             <div>Ca khúc Đào nương</div>
                         </a>
                     </div>
-                    <div class="col-lg-6 col-sm-12" style={{ paddingBottom: "18px" }}>
+                    <div className="col-lg-6 col-sm-12" style={{ paddingBottom: "18px" }}>
                         <a
                             href="https://hopamviet.vn/info/related/383/danh-ca-le-thu-su-nghiep-lay-lung-doi-tu-lan-dan.html"
                             title="Danh ca Lệ Thu: Sự nghiệp lẫy lừng, đời tư lận đận"
@@ -77,7 +77,7 @@ const Post = () => {
                                     src="https://hopamviet.vn/assets/images/editor/thumb/lethu_thumb.jpg"
                                     width="120"
                                     height="80"
-                                    class="float-left mr-3"
+                                    className="float-left mr-3"
                                     alt="Danh ca Lệ Thu: Sự nghiệp lẫy lừng, đời tư lận đận"
                                 ></img>
                             </div>
