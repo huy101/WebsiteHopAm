@@ -4,9 +4,9 @@ const { User } = require("../models/user"); // Assuming validate is also used fo
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const passwordComplexity = require("joi-password-complexity"); 
+// const session = require('express-session');
 router.post("/", async (req, res) => {
     try {
-      console.log("Running");
       console.log("Received data from frontend:", req.body); 
   
       // Find the user by email
@@ -24,11 +24,12 @@ router.post("/", async (req, res) => {
   
       // Generate a JWT token
       const token = jwt.sign(
-        { _id: user._id, email: user.email },
+        { _id: user._id, email: user.email, name:user.username },
         process.env.JWTPRIVATEKEY,
         { expiresIn: "1h" } // Token expires in 1 hour
       );
   console.log(user)
+
       // Send the token and user details in the response
       return res.status(200).send({
         message: "Login successful",

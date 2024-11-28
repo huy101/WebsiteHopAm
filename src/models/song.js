@@ -1,46 +1,47 @@
 const mongoose = require("mongoose");
-const Genre=require('./genre')
-const rhythm =require('./rhythm')
-// Schema cho bảng thể loại
+const Genre = require('./genre');
+const Rhythm = require('./rhythm');
+const { User } = require("./user");
 
-
-// Schema cho bảng điệu
-
-
-// Schema cho hợp âm
+// Schema for Chord (no changes)
 const chordSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true, // Tên hợp âm là bắt buộc
+    required: true,
   },
 });
-
-// Model cho bảng hợp âm
 const Chord = mongoose.model("Chord", chordSchema);
 
-// Schema chính cho bài hát
+// Updated schema for Song
 const songSchema = new mongoose.Schema({
-  title: { type: String, required: true }, // Tên bài hát
-  artist: { type: String }, // Tên nhạc sĩ sáng tác
-  genre: { type: mongoose.Schema.Types.ObjectId, ref: "Genre", required: true }, // Thể loại (tham chiếu đến bảng Genre)
-  rhythm: { type: mongoose.Schema.Types.ObjectId, ref: "Rhythm", required: true }, // Điệu (tham chiếu đến bảng Rhythm)
-  tone: { type: String }, // Tone chủ của bài hát
+  title: { type: String, required: true },
+  artist: { type: String },
+  genre: { type: mongoose.Schema.Types.ObjectId, ref: "Genre", required: true },
+  rhythm: { type: mongoose.Schema.Types.ObjectId, ref: "Rhythm", required: true },
+  tone: { type: String },
+  slug: { type: String, unique: true },
   lyrics: [
     {
       verse: String,
-      chords: [String],
     },
   ],
-  createdAt: { type: Date, default: Date.now }, // Ngày tạo bài hát
-  updatedAt: { type: Date, default: Date.now }, // Ngày cập nhật bài hát
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+  user:{ type: mongoose.Schema.Types.ObjectId, ref: "User", required: false  },
+  comments: [
+    {
+       // Or reference user schema if available
+      text: String,
+      date: { type: Date, default: Date.now },
+    },
+  ],
+  viewCount: { type: Number, default: 0 }, // Track song views
 });
 
-// Model cho bảng bài hát
 const Song = mongoose.model("Song", songSchema);
 
-// Hàm để tạo thể loại và điệu
+// Function to create Genres and Rhythms (no changes here)
 const createGenresAndRhythms = async () => {
-  // Mảng thể loại
   const genres = [
     { name: "Nhạc Vàng" },
     { name: "Nhạc Trẻ" },
@@ -49,7 +50,6 @@ const createGenresAndRhythms = async () => {
     { name: "Nhạc Đỏ" },
   ];
 
-  // Mảng điệu
   const rhythms = [
     { name: "Bolero" },
     { name: "Ballad" },
@@ -58,22 +58,20 @@ const createGenresAndRhythms = async () => {
     { name: "Disco" },
     { name: "Chachacha" },
     { name: "Rap" },
-
   ];
 
   try {
-    // Kiểm tra và lưu thể loại
     for (const genre of genres) {
       const existingGenre = await Genre.findOne({ name: genre.name });
       if (!existingGenre) {
         await Genre.create(genre);
         console.log(`Genre created: ${genre.name}`);
+        console.log(filePath);
       } else {
         console.log(`Genre already exists: ${genre.name}`);
       }
     }
 
-    // Kiểm tra và lưu điệu
     for (const rhythm of rhythms) {
       const existingRhythm = await Rhythm.findOne({ name: rhythm.name });
       if (!existingRhythm) {
@@ -88,8 +86,6 @@ const createGenresAndRhythms = async () => {
   }
 };
 
-// Gọi hàm để tạo thể loại và điệu
 createGenresAndRhythms();
 
-// Xuất tất cả các model
-module.exports = { Song, Chord};
+module.exports = { Song, Chord };
