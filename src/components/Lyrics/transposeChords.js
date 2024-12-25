@@ -3,12 +3,17 @@ const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
 // Hàm để tìm nốt tiếp theo dựa trên số bán âm thay đổi
 const transposeNote = (note, semitones) => {
+  if (!note) return note; // Nếu không có hợp âm, trả lại nguyên bản
+
   const noteWithoutModifier = note.match(/[A-G]#?/)[0]; // Tìm nốt cơ bản (C, D, E, v.v.)
   const modifier = note.replace(noteWithoutModifier, ''); // Phần còn lại của hợp âm (7, m, dim, v.v.)
   
   // Tìm vị trí của nốt trong danh sách
   const currentIndex = NOTES.indexOf(noteWithoutModifier);
   
+  // Nếu không tìm thấy nốt trong mảng
+  if (currentIndex === -1) return note; // Trả lại hợp âm nguyên gốc nếu nốt không hợp lệ
+
   // Tính chỉ số mới sau khi thay đổi tone
   let newIndex = (currentIndex + semitones) % NOTES.length;
   if (newIndex < 0) newIndex += NOTES.length; // Đảm bảo chỉ số không âm
@@ -18,9 +23,11 @@ const transposeNote = (note, semitones) => {
 
 // Hàm để chuyển đổi toàn bộ hợp âm trong bài hát
 const transposeChords = (lyrics, semitones) => {
+  if (!lyrics) return lyrics; // Nếu không có lyrics, trả lại nguyên văn
+
   return lyrics.map((line) => {
     const lines = line.verse.split("\n");
-    
+
     // Xử lý từng dòng của lời bài hát
     const transposedLines = lines.map((sentence) => {
       // Tách lời và hợp âm ra
@@ -41,5 +48,6 @@ const transposeChords = (lyrics, semitones) => {
     };
   });
 };
+
 export { transposeChords, transposeNote };
 export default transposeChords;

@@ -1,22 +1,175 @@
-.body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.5;
-  color: #212529;
-  text-align: left;
-  background-color: #fff;
+/* Tùy chỉnh thanh cuộn */
+
+
+/* Chỉnh sửa thanh cuộn */
+.MuiPaper-root::-webkit-scrollbar {
+  width: 10px; /* Chiều rộng thanh cuộn */
 }
-.contain{
-  display: flex;
-  align-items: center;
+
+/* Chỉnh sửa phần tay cầm của thanh cuộn */
+.MuiPaper-root::-webkit-scrollbar-thumb {
+  background-color: #888; /* Màu sắc tay cầm */
+  border-radius: 4px; /* Làm bo tròn tay cầm */
+  border: 2px solid transparent; /* Thêm viền cho tay cầm */
+  background-clip: content-box; /* Tạo khoảng cách giữa tay cầm và viền */
+}
+
+/* Chỉnh sửa phần track của thanh cuộn */
+.MuiPaper-root::-webkit-scrollbar-track {
+  background-color: #f1f1f1; /* Màu nền của track */
+  border-radius: 4px; /* Bo tròn góc của track */
+}
+
+/* Khi hover vào thanh cuộn */
+.MuiPaper-root::-webkit-scrollbar-thumb:hover {
+  background-color: #555; /* Thay đổi màu khi hover */
+}
+
+.MuiAppBar-root {
+    background-color: #e4e4e4 ;
+    /* linear-gradient(135deg, #1976d2 0%, #1866ee  100%); */
+    color: #495057;
+  }
+ 
+  .MuiToolbar-root {
+    padding: 0.5rem 1.5rem;
+    gap: 2rem;
+    display: flex;
+    justify-content: center;
+    background-color: #e4e4e4 ;
+  }
   
-}
-.row{
-  display: flex;
-  flex-direction: row;
-}
- .fas {
-  font-weight: 900;
-}
+  /* Logo/Brand styling */
+  .MuiTypography-h6 {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #403e57;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+  
+  .MuiTypography-h6:hover {
+    opacity: 0.9;
+  }
+  
+  /* Navigation menu items */
+  .MuiMenuItem-root {
+    font-weight: 500;
+    color: #403e57 !important;
+    padding: 0.5rem 1rem;
+  }
+  
+  .MuiMenuItem-root:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Search box styling */
+  .MuiTextField-root {
+    background-color: #fff;
+    border-radius: 4px;
+    margin-right: 0.5rem;
+    min-width: 300px;
+  }
+  
+  .MuiTextField-root:hover {
+    background-color: #fff
+  }
+  
+  .MuiTextField-root .MuiInputBase-root {
+    color: #495057;
+  }
+  
+  .MuiTextField-root .MuiOutlinedInput-notchedOutline {
+    border-color: transparent;
+  }
+  
+  .MuiTextField-root .MuiInputBase-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  /* Buttons styling */
+  .MuiButton-root {
+    text-transform: none;
+    font-weight: 500;
+    padding: 0.5rem 1.25rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    color: #495057;
+    :hover{
+      transition: background-color 0.2s ease;
+    }
+  }
+  
+  .MuiButton-root:not(:last-child) {
+    margin-right: 0.5rem;
+  }
+  
+  /* User menu styling */
+  .MuiIconButton-root {
+    color: #403e57;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+  }
+  .MuiTouchRipple{
+    border-radius: 0%;
+  }
+  .MuiIconButton-root:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Dropdown menus */
+  .MuiMenu-paper {
+    margin-top: 0.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+  .MuiButtonBase-root{
+    color: #403e57;
+  }
+  .MuiMenu-list .MuiMenuItem-root {
+    color: #333;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+  }
+  .MuiMenuItem-root{
+    color: #495057;
+  }
+  .MuiMenu-list .MuiMenuItem-root:hover {
+    background-color: rgba(25, 118, 210, 0.08);
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .MuiToolbar-root {
+      padding: 0.5rem;
+      gap: 1rem;
+    }
+  
+    .MuiTextField-root {
+      min-width: 200px;
+    }
+  }
+
+  /* Search icon styling */
+  .MuiSvgIcon-root {
+    color: #403e57;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+  
+  .MuiSvgIcon-root:hover {
+    opacity: 0.8;
+  }
+  
+  /* User menu display */
+  .MuiIconButton-root {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .MuiIconButton-root .MuiSvgIcon-root {
+    font-size: 1.25rem;
+  }
+  

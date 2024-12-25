@@ -8,7 +8,7 @@ import axios from 'axios';
   async (newSong, { rejectWithValue }) => {
     try {
       // Giả sử bạn có một API để thêm bài hát
-      const response = await axios.post('http://localhost:8080/add', newSong);
+      const response = await axios.post('http://localhost:8080/song/add', newSong);
       
       return response.data; 
       // Trả về dữ liệu sau khi bài hát đã được thêm

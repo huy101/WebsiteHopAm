@@ -1,182 +1,291 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchGenres } from '../../redux/genreSlice'; // Import the async thunk for genres
-import { fetchRhythms } from '../../redux/rhythmSlice'; // Import the async thunk for rhythms
-import addSong from '../../redux/addAction';
-import NavbarTop from '../Navbar/Navbar';
-import axios from 'axios';
+  import React, { useEffect, useState } from 'react';
+  import { useDispatch, useSelector } from 'react-redux';
+  import { fetchGenres } from '../../redux/genreSlice'; 
+  import { fetchRhythms } from '../../redux/rhythmSlice'; 
+  import addSong from '../../redux/addAction';
+  import NavbarTop from '../Navbar/Navbar';
+  import { useNavigate } from 'react-router-dom';
+  import {
+    Container,
+    TextField,
+    Select,
+    MenuItem,
+    InputLabel,
+    FormControl,
+    Button,
+    Typography,
+    Box,
+    Snackbar,
+    Alert
+  } from '@mui/material';
+  import './addsong.css'
+  const AddSong = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const genres = useSelector((state) => state.genres);
+    const rhythms = useSelector((state) => state.rhythms);
+    const [selectedGenre, setSelectedGenre] = useState('');
+    const [selectedRhythm, setSelectedRhythm] = useState('');
+    const [title, setTitle] = useState('');
+    const [artist, setArtist] = useState('');
+    const [tone, setTone] = useState('C'); 
+    const [lyrics, setLyrics] = useState('');
+    const userId = localStorage.getItem('userId');
+    const [videoUrl, setVideoUrl] = useState(''); 
+  const [message, setMessage] = useState("");
+    const [error, setError] = useState("");
 
-const AddSong = () => {
-  const dispatch = useDispatch();
-  const genres = useSelector((state) => state.genres);
-  const rhythms = useSelector((state) => state.rhythms);
-  const [selectedGenre, setSelectedGenre] = useState('');
-  const [selectedRhythm, setSelectedRhythm] = useState('');
-  const [title, setTitle] = useState('');
-  const [artist, setArtist] = useState('');
-  const [tone, setTone] = useState('C'); // Default tone
-  const [lyrics, setLyrics] = useState('');
+    useEffect(() => {
+      if (!userId) {
+        alert('Vui lòng đăng nhập để thêm bài hát.');
+        navigate('/login'); 
+      }
+    }, [userId, navigate]);
 
-  useEffect(() => {
-    dispatch(fetchGenres()); // Fetch genres when the component mounts
-    dispatch(fetchRhythms()); // Fetch rhythms when the component mounts
-  }, [dispatch]);
+    useEffect(() => {
+      dispatch(fetchGenres());
+      dispatch(fetchRhythms());
+    }, [dispatch]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newSong = {
-      title,
-      artist,
-      genre: selectedGenre,
-      rhythm: selectedRhythm,
-      tone,
-      lyrics: [
-        {
-          verse: lyrics,
-          chords: extractChords(lyrics),
-        },
-      ],
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      if (!title || !artist || !selectedGenre || !selectedRhythm || !lyrics) {
+        setError('Vui lòng điền đầy đủ thông tin trước khi đăng bài.');
+        return; // Ngừng thực hiện nếu thiếu thông tin
+      }
+      const videoId = extractVideoId(videoUrl); 
+      const newSong = {
+        title,
+        artist,
+        genre: selectedGenre,
+        rhythm: selectedRhythm,
+        tone,
+        userId,
+        videoId,
+        lyrics: [
+          {
+            verse: lyrics,
+            chords: extractChords(lyrics),
+          },
+        ],
+      };
+      dispatch(addSong(newSong)) // Dispatch action to add song
+        .then(() => {
+          setMessage('Bài hát đã được thêm thành công!');
+          setError('');
+        })
+        .catch((error) => {
+          setError('Có lỗi xảy ra khi thêm bài hát.');
+          setMessage('');
+        });
     };
-    dispatch(addSong(newSong)); // Dispatch action to add song
-  };
 
-  const extractChords = (lyrics) => {
-    const regex = /\[(.*?)\]/g;
-    let matches = [];
-    let match;
-    while ((match = regex.exec(lyrics)) !== null) {
-      matches.push(match[1]);
-    }
-    return matches;
-  };
+    const extractVideoId = (url) => {
+      const regex = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/|.*[&?]v=))([\w\-]{11})/;
+      const match = url.match(regex);
+      return match ? match[1] : null;
+    };
 
-  return (
-    <>
-      <div className="top">
-        <NavbarTop />
-      </div>
-      <div className="container">
-        <h3>Thêm bài hát mới</h3>
-        <form onSubmit={handleSubmit}>
-          {/* Your form inputs remain unchanged */}
-          <div className="row mb-3">
-            <div className="col-12">
-              <div className="form-group">
-                <label htmlFor="title1">Tên bài hát (*)</label>
-                <input
-                  type="text"
-                  name="title1"
-                  className="form-control"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-          </div>
-          <div className="row mb-3">
-            <div className="col-md-3">
-              <div className="form-group">
-                <label htmlFor="composer3">Tác giả</label>
-                <input
-                  type="text"
-                  name="composer3"
-                  className="form-control author"
-                  value={artist}
-                  onChange={(e) => setArtist(e.target.value)}
-                />
-              </div>
-            </div>
-          </div>
+    const extractChords = (lyrics) => {
+      const regex = /\[(.*?)\]/g;
+      let matches = [];
+      let match;
+      while ((match = regex.exec(lyrics)) !== null) {
+        matches.push(match[1]);
+      }
+      return matches;
+    };
 
-          {/* Genre Selection */}
-          <div className="row mb-3">
-            <div className="col-md-4">
-              <div className="form-group">
-                <label htmlFor="genre">Thể loại</label>
-                <select
-                  name="genre"
-                  className="form-control"
-                  value={selectedGenre}
-                  onChange={(e) => setSelectedGenre(e.target.value)}
-                  required
-                >
-                  <option value="">Chọn thể loại</option>
-                  {genres.map((genre) => (
-                    <option key={genre._id} value={genre._id}>
-                      {genre.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
+    return (
+      <>
+      
+        <Container maxWidth="md" sx={{  display: 'flex', flexDirection: 'row' }}>
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ width: 900 }}>
+            {/* Song Title */}
+            <TextField
+              fullWidth
+              label="Tên bài hát"
+              variant="outlined"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              margin="normal"
+              sx={{
+                marginBottom: '16px', // Add margin below the input field
+                '& .MuiInputLabel-root': {
+                  color: 'gray', // Change label color
+                },
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '8px', // Rounded corners for the input box
+                  '& fieldset': {
+                    borderColor: '#B0B0B0', // Border color
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'black', // Change border color on hover
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#1976d2', // Change border color when focused
+                  },
+                },
+              }}
+            />
+            {/* Artist */}
+            <TextField
+              fullWidth
+              label="Ca sĩ"
+              variant="outlined"
+              value={artist}
+              onChange={(e) => setArtist(e.target.value)}
+              margin="normal"
+              sx={{
+                marginBottom: '16px', // Add margin below the input field
+                '& .MuiInputLabel-root': {
+                  color: 'gray', // Change label color
+                },
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '8px', // Rounded corners for the input box
+                  '& fieldset': {
+                    borderColor: '#B0B0B0', // Border color
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'black', // Change border color on hover
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#1976d2', // Change border color when focused
+                  },
+                },
+              }}
+            />
+            {/* Genre Selection */}
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Thể loại</InputLabel>
+              <Select
+                value={selectedGenre}
+                onChange={(e) => setSelectedGenre(e.target.value)}
+                required
+              >
+                <MenuItem value="">
+                  <em>Chọn thể loại</em>
+                </MenuItem>
+                {genres.map((genre) => (
+                  <MenuItem key={genre._id} value={genre._id}>
+                    {genre.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             {/* Rhythm Selection */}
-            <div className="col-md-4">
-              <div className="form-group">
-                <label htmlFor="rhythm">Điệu nhạc</label>
-                <select
-                  name="rhythm"
-                  className="form-control"
-                  value={selectedRhythm}
-                  onChange={(e) => setSelectedRhythm(e.target.value)}
-                  required
-                >
-                  <option value="">Chọn điệu nhạc</option>
-                  {rhythms.map((rhythm) => (
-                    <option key={rhythm._id} value={rhythm._id}>
-                      {rhythm.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Điệu nhạc</InputLabel>
+              <Select
+                value={selectedRhythm}
+                onChange={(e) => setSelectedRhythm(e.target.value)}
+                required
+              >
+                <MenuItem value="">
+                  <em>Chọn điệu nhạc</em>
+                </MenuItem>
+                {rhythms.map((rhythm) => (
+                  <MenuItem key={rhythm._id} value={rhythm._id}>
+                    {rhythm.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             {/* Tone Selection */}
-            <div className="col-md-4">
-              <div className="form-group">
-                <label htmlFor="tone">Tone chủ bài hát</label>
-                <select
-                  name="tone"
-                  className="form-control"
-                  value={tone}
-                  onChange={(e) => setTone(e.target.value)}
-                >
-                  <option value="C">C</option>
-                  <option value="D">D</option>
-                  <option value="E">E</option>
-                  <option value="F">F</option>
-                  <option value="G">G</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          {/* Lyrics Section */}
-          <div className="form-group">
-            <label htmlFor="lyrics">Lời và hợp âm (*)</label>
-            <textarea
-              rows="10"
-              name="lyrics"
-              id="lyrics"
-              className="form-control"
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Tone chủ bài hát</InputLabel>
+              <Select
+                value={tone}
+                onChange={(e) => setTone(e.target.value)}
+              >
+                {["C", "D", "E", "F", "G", "A", "B", "Cm", "Dm", "Em", "Fm", "Gm", "Am", "Bm"].map(
+                  (toneOption) => (
+                    <MenuItem key={toneOption} value={toneOption}>
+                      {toneOption}
+                    </MenuItem>
+                  )
+                )}
+              </Select>
+            </FormControl>
+            {/* Video URL */}
+            <TextField
+              fullWidth
+              label="YouTube Video URL"
+              variant="outlined"
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+              margin="normal"
+              sx={{
+                marginBottom: '16px', // Add margin below the input field
+                '& .MuiInputLabel-root': {
+                  color: 'gray', // Change label color
+                },
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '8px', // Rounded corners for the input box
+                  '& fieldset': {
+                    borderColor: '#B0B0B0', // Border color
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'black', // Change border color on hover
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#1976d2', // Change border color when focused
+                  },
+                },
+              }}
+            />
+            {/* Lyrics */}
+            <TextField
+              fullWidth
+              label="Lời và hợp âm"
+              variant="outlined"
+              multiline
+              rows={15}
               value={lyrics}
               onChange={(e) => setLyrics(e.target.value)}
               required
-            ></textarea>
-            <small className="text-muted">
-              Hợp âm phải bỏ trong dấu ngoặc vuông []. Thông tin ca sĩ thể hiện và link bài hát để ở dưới cùng.
-            </small>
-          </div>
+              margin="normal"
+              helperText="Hợp âm phải bỏ trong dấu ngoặc vuông []. Thông tin ca sĩ thể hiện và link bài hát để ở dưới cùng."
+              sx={{
+                '& .MuiInputLabel-root': {
+                  color: 'gray', // Change label color
+                },
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '8px', // Rounded corners for the input box
+                  '& fieldset': {
+                    borderColor: '#B0B0B0', // Border color
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'black', // Change border color on hover
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#1976d2', // Change border color when focused
+                  },
+                },
+              }}
+            />
+                {message && (
+                  <Alert severity="success" sx={{ margin: '0px' }}>
+                    {message}
+                  </Alert>
+                )}
+                {error && (
+                  <Alert severity="error" sx={{ margin: '0px'  }}>
+                    {error}
+                  </Alert>
+                )}
+            {/* Submit Button */}
+            <Button type="submit" variant="contained" color="primary" fullWidth sx={{ }}>
+              Đăng bài
+            </Button>
+          </Box>
+        </Container>
 
-          {/* Submit Button */}
-          <button type="submit" className="btn btn-primary">
-            Đăng bài
-          </button>
-        </form>
-      </div>
-    </>
-  );
-};
+        {/* Snackbar for notifications */}
+    
+      </>
+    );
+  };
 
-export default AddSong;
+  export default AddSong;

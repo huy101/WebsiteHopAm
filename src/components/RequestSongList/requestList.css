@@ -1,0 +1,93 @@
+    /* Container styles */
+    .request-form-container {
+        min-height: 100vh;
+        background-color: #f5f5f5;
+        padding: 20px;
+    }
+    
+    /* Form box custom styles */
+  
+    
+    /* Form field spacing and appearance */
+    .MuiTextField-root {
+        margin-bottom: 16px;
+    }
+    
+    /* Custom styles for the text fields */
+    .MuiOutlinedInput-root {
+        border-radius: 8px;
+    }
+    
+    .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+        border-color: #1976d2;
+    }
+    
+    /* Submit button hover effect */
+    .MuiButton-contained {
+        text-transform: none;
+        font-weight: 600;
+        padding: 10px 0;
+        transition: transform 0.2s ease-in-out;
+    }
+    
+    .MuiButton-contained:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Alert customization */
+    .MuiAlert-root {
+        border-radius: 8px;
+    }
+    
+    .MuiAlert-standardSuccess {
+        background-color: #e8f5e9;
+        border: 1px solid #66bb6a;
+    }
+    
+    .MuiAlert-standardError {
+        background-color: #ffebee;
+        border: 1px solid #ef5350;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+        .MuiBox-root {
+        margin: 1rem;
+        padding: 1.5rem;
+        }
+        
+        .MuiTypography-h5 {
+        font-size: 1.25rem;
+        }
+        
+        .MuiButton-contained {
+        padding: 8px 0;
+        }
+    }
+    
+    /* Form title styles */
+    .MuiTypography-h5 {
+        color: #1976d2;
+        font-weight: 600;
+        margin-bottom: 24px;
+    }
+    
+    /* Textarea (lyrics field) custom styles */
+    .MuiOutlinedInput-multiline {
+        min-height: 120px;
+    }
+    
+    /* Focus states */
+    .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+        border-width: 2px;
+    }
+    
+    /* Label animations */
+    .MuiInputLabel-root {
+        transition: color 0.2s ease-in-out;
+    }
+    
+    .MuiInputLabel-root.Mui-focused {
+        color: #1976d2;
+    }

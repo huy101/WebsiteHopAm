@@ -1,67 +1,61 @@
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import './login.css';
+import { Button,Box, TextField, Typography, Container,Dialog, DialogActions, DialogContent, DialogTitle  } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import NavbarTop from '../Navbar/Navbar';
 import { useState, useEffect } from 'react';
 import { userLogin } from '../../redux/authActions';
-
+import './login.css';
+import ResetPassword from '../Register/ResetPassword'
 function Login() {
-  const [data, setData] = useState({ email: '', password: '', name:'' });
-  const [error, setError] = useState({});
+  const [data, setData] = useState({ email: '', password: '' });
   const [msg, setMsg] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
 
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  
+  const handleClose = () => {
+    setOpen(false);
+  };
+  
   // Get auth state from Redux
-  const { loading, userInfo, userToken, error: loginError, success } = useSelector(
-    (state) => state.auth
-  );
+  const { loading, userToken, error } = useSelector((state) => state.auth);
 
   // Redirect if already logged in
   useEffect(() => {
     if (userToken) {
-      
       navigate('/'); // Redirect to home or another page when logged in
     }
   }, [userToken, navigate]);
 
-  // Xử lý logic login
+  // Handle login logic
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError({});
-    const newError = {};
 
-    // Validate inputs
-    if (!data.email.trim()) {
-      newError.email = 'Bạn chưa nhập email';
-    }
-    if (!data.password.trim()) {
-      newError.password = 'Bạn chưa nhập mật khẩu';
-    }
-    if (Object.keys(newError).length > 0) {
-      setError(newError);
+    if (!data.email.trim() || !data.password.trim()) {
+      setMsg('Vui lòng điền đủ thông tin đăng nhập.');
       return;
     }
 
-    // Perform login
     try {
       const action = await dispatch(
         userLogin({ email: data.email, password: data.password })
       );
+
       if (userLogin.fulfilled.match(action)) {
-        setMsg('Login successful!');
-        navigate('/'); // Navigate to home page after login
+        setMsg('Đăng nhập thành công!');
+        navigate('/'); // Navigate to the home page after login
       }
-    } catch (error) {
-      if (error.response && error.response.status >= 400 && error.response.status <= 500) {
-        setError({ api: error.response.data.message });
-      }
+    } catch (err) {
+      // Error handling is already managed by Redux
+      setMsg('');
     }
   };
 
-  // Cập nhật state khi người dùng nhập dữ liệu vào form
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setData((prevData) => ({
@@ -72,52 +66,77 @@ function Login() {
 
   return (
     <>
-      <div className="top">
+      <div className="Navbar">
         <NavbarTop />
       </div>
-      <div className="login">
+      <Container maxWidth="xs" className="login">
         <div className="Login-form">
-          <Form onSubmit={handleLogin}>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Email address</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Enter email"
-                value={data.email}
-                name="email"
-                onChange={handleChange}
-              />
-              <Form.Text className="text-muted">
-                We'll never share your email with anyone else.
-              </Form.Text>
-            </Form.Group>
+          <Typography variant="h5">Đăng nhập</Typography>
+          <form onSubmit={handleLogin}>
+            <TextField
+              label="Email address"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              type="email"
+              placeholder="Enter email"
+              value={data.email}
+              name="email"
+              onChange={handleChange}
+              error={!!error?.email}
+              helperText={error?.email}
+            />
+            <TextField
+              label="Password"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              type="password"
+              placeholder="Password"
+              value={data.password}
+              name="password"
+              onChange={handleChange}
+              error={!!error?.password}
+              helperText={error?.password}
+            />
 
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Password"
-                value={data.password}
-                name="password"
-                onChange={handleChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicCheckbox">
-              <Form.Check type="checkbox" label="Check me out" />
-            </Form.Group>
+            {/* Display Redux errors or success messages */}
+            {error && <Typography color="error">tài khoản hoặc mật khẩu không đúng</Typography>}
+            {msg && <Typography color="success">{msg}</Typography>}
 
-            {/* Display errors or success messages */}
-            {error.api && <div className="error_msg">{error.api}</div>}
-            {msg && <div className="success_msg">{msg}</div>}
-            {error.email && <div className="error_msg">{error.email}</div>}
-            {error.password && <div className="error_msg">{error.password}</div>}
-
-            <Button variant="primary" type="submit" disabled={loading}>
-              {loading ? 'Loading...' : 'Submit'}
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              fullWidth
+              disabled={loading}
+              sx={{ marginTop: 2 }}
+            >
+              {loading ? 'Loading...' : 'Login'}
             </Button>
-          </Form>
+           <Box sx={{display:'flex'}}><Typography
+              variant="h6"
+              component={Link}
+              to="/register"
+              sx={{ marginRight: '20px', cursor: 'pointer' }}
+            >
+              Đăng ký
+            </Typography>
+            <Typography  variant="h6"    sx={{  cursor: 'pointer' }} onClick={handleClickOpen}>
+              Quên mật khẩu
+            </Typography></Box>
+          </form>
         </div>
-      </div>
+        {/* Dialog for password reset */}
+      <Dialog open={open} onClose={handleClose}>
+        <DialogContent>
+         <ResetPassword />
+        </DialogContent>
+        <DialogActions>
+         
+        </DialogActions>
+      </Dialog>
+      </Container>
     </>
   );
 }

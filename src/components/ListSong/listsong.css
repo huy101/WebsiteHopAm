@@ -1,54 +1,50 @@
-.body{
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #212529;
-    text-align: left;
-    
-}
-
-
-
-
-.list_song{
-    padding: 0 10px 10px 10px;
-}
-.col-12{
-    position: relative;
-    width: 100%;
-    padding-right: 15px;
-    padding-left: 15px;
-}
-.h5{
-    padding: 0 0 10px;
-    color: #777;
-    font-size: 1.25rem;
-}
-.fas{
-    font-weight: 900;
-}
-.a{
-    color: #007bff;
-    text-decoration: none;
-    background-color: transparent;
-}
-.small {
-    font-size: 80%;
-    font-weight: 400;
-}
-.chord {
-    color: #df495b;
-}.text-muted {
-    color: #6c757d !important;
-}
-.csinger {
-    color: #97bee2;
-}
-.mx-auto{
+/* .center {
     display: flex;
-    align-items: center;
     justify-content: center;
-}
-.ml-auto, .mx-auto {
-    margin-left: auto !important;
-}
+    padding: 20px;
+  } */
+  
+ 
+  
+ 
+  
+
+  
+  @media (max-width: 768px) {
+    
+  }
+  
+  .top {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Override Material-UI styles for better list presentation */
+
+  .MuiDivider-inset {
+    margin: 4px 0 !important;
+  }
+  
+  /* Typography adjustments */
+  .MuiTypography-h4 {
+    margin-bottom: 16px !important;
+    font-weight: 600 !important;
+  }
+  
+  /* List item hover effect */
+  .MuiPaper-root:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s ease;
+  }
+  
+  /* Loading and error states */
+  .CircularProgress-root {
+    margin: 40px auto;
+  }
+  
+  .MuiAlert-root {
+    margin: 20px 0;
+  }

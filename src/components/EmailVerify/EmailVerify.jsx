@@ -4,7 +4,7 @@ import axios from "axios";
 import success from "../../images/success.png";
 import "./emailverify.css"
 import { Fragment } from "react/cjs/react.production.min";
-import { Button } from "react-bootstrap";
+import { Button } from "@mui/material";
 
 
 const EmailVerify = () => {

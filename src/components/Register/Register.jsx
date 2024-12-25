@@ -1,65 +1,52 @@
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import './Register.css';
-import axios from 'axios';
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { registerUser } from '../../redux/authActions';
+import { TextField, Button, Box, Typography, CircularProgress } from '@mui/material';
 import NavbarTop from '../Navbar/Navbar';
+import './Register.css';
 
-function Register() {
-  const [data, setData] = useState({
+const Register = () => {
+  const dispatch = useDispatch();
+  const loading = useSelector((state) => state.auth.loading); // Correct loading selector
+  const { error, successMessage } = useSelector((state) => state.auth); // Correct error and successMessage selector
+
+  const [formData, setFormData] = useState({
     email: '',
     username: '',
     password: '',
   });
 
-  const [errors, setErrors] = useState({});
-  const [msg, setMsg] = useState('');
+  // Handle input changes
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Handle form submission
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-    // Tạo đối tượng lưu lỗi
-    const newErrors = {};
-    if (!data.email.trim()) {
-      newErrors.email = 'Email không được để trống';
-    }
-    else
-    if (!data.username.trim()) {
-      newErrors.username = 'Tên đăng nhập không được để trống';
-    }
-    else
-    if (!data.password.trim()) {
-      newErrors.password = 'Password không được để trống';
-    }
+    const { username, email, password } = formData;
 
-    // Nếu có lỗi, setErrors và không gửi request
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    if (!username || !email || !password) {
+      console.log("Please fill in all fields");
       return;
     }
 
     try {
-      const url = 'http://localhost:8080/api/users';
-      const { data: res } = await axios.post(url, data);
-      setMsg(res.message);
-      setErrors({}); // Clear errors nếu thành công
+      await dispatch(registerUser({ username, email, password })).unwrap();
+      // Optionally clear the form after successful registration
+      setFormData({
+        email: '',
+        username: '',
+        password: '',
+      });
     } catch (error) {
-      if (
-        error.response &&
-        error.response.status >= 400 &&
-        error.response.status <= 500
-      ) {
-        setErrors({ api: error.response.data.message });
-      }
+      console.error(error);
     }
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
   };
 
   return (
@@ -68,65 +55,61 @@ function Register() {
         <NavbarTop />
       </div>
       <div className="login">
-        <div className="Login-form">
-          <legend>Đăng ký thành viên</legend>
-          <Form onSubmit={handleSubmit} >
-            <Form.Group className="mb-3">
-              <Form.Label>Email</Form.Label>
-              <Form.Control
-                
-                type="email"
-                name="email"
-                onChange={handleChange}
-                value={data.email}
-              />
-             
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Tên đăng nhập</Form.Label>
-              <Form.Control
-                type="text"
-                name="username"
-                onChange={handleChange}
-                value={data.username}
-              />
-              
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
-                name="password"
-                onChange={handleChange}
-                value={data.password}
-              />
+        <Box sx={{ maxWidth: 400, margin: 'auto', padding: 3 }}>
+          <Typography variant="h5" gutterBottom align="center">
+            Đăng ký thành viên
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              label="Email"
+              type="email"
+              name="email"
+              fullWidth
+              onChange={handleChange}
+              value={formData.email}
+              required
+              margin="normal"
+            />
+            <TextField
+              label="Tên đăng nhập"
+              type="text"
+              name="username"
+              fullWidth
+              onChange={handleChange}
+              value={formData.username}
+              required
+              margin="normal"
+            />
+            <TextField
+              label="Password"
+              type="password"
+              name="password"
+              fullWidth
+              onChange={handleChange}
+              value={formData.password}
+              required
+              margin="normal"
+            />
             
-            </Form.Group>
+            {/* Display API errors and success messages */}
+            {error && <Typography color="error" sx={{ marginTop: 2 }}>{error}</Typography>}
+            {successMessage && <Typography color="success" sx={{ marginTop: 2 }}>{successMessage}</Typography>}
 
-            {/* <Form.Group className="mb-3" controlId="formBasicCheckbox">
-              <Form.Check type="checkbox" label="Check me out" />
-            </Form.Group> */}
-
-            {/* Hiển thị lỗi từ API */}
-            {errors.api && <div className="error_msg">{errors.api}</div>}
-            {msg && <div className="success_msg">{msg}</div>}
-            {errors.email && <div className="error_msg">{errors.email}</div>}
-            {errors.password && (
-                <div className="error_msg">{errors.password}</div>
-              )}
-              {errors.username && (
-                <div className="error_msg">{errors.username}</div>
-              )}
-            <Button variant="primary" type="submit">
-              Submit
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              fullWidth
+              sx={{ marginTop: 3 }}
+              disabled={loading}
+            >
+              {loading ? <CircularProgress size={24} /> : 'Đăng ký'}
             </Button>
-          </Form>
-        </div>
+          </form>
+        </Box>
       </div>
     </>
   );
-}
+};
 
 export default Register;
