@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Genre = require('./genre');
 const Rhythm = require('./rhythm');
 const { User } = require("./user");
+const { boolean } = require("joi");
 
 // Schema for Chord (no changes)
 const chordSchema = new mongoose.Schema({
@@ -13,32 +14,33 @@ const chordSchema = new mongoose.Schema({
 const Chord = mongoose.model("Chord", chordSchema);
 
 // Updated schema for Song
-const songSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  artist: { type: String },
-  genre: { type: mongoose.Schema.Types.ObjectId, ref: "Genre", required: true },
-  rhythm: { type: mongoose.Schema.Types.ObjectId, ref: "Rhythm", required: true },
-  tone: { type: String },
-  slug: { type: String, unique: true },
-  lyrics: [
-    {
-      verse: String,
-    },
-  ],
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-  user:{ type: mongoose.Schema.Types.ObjectId, ref: "User", required: false  },
-  comments: [
-    {
-       // Or reference user schema if available
-      text: String,
-      date: { type: Date, default: Date.now },
-    },
-  ],
-  viewCount: { type: Number, default: 0 }, // Track song views
-});
+const songSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true, index: true },
+    artist: { type: String }, // Tham chiếu đến bảng Artist
+    genre: { type: mongoose.Schema.Types.ObjectId, ref: "Genre", required: true },
+    rhythm: { type: mongoose.Schema.Types.ObjectId, ref: "Rhythm", required: true },
+    tone: { type: String, default: "C" }, // Giá trị mặc định cho tone
+    status: { type: Boolean, default: false },
+    lyrics: [
+      {
+        verse: String,
+      },
+    ],
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    videoId: { type: String },
+    viewCount: { type: Number, default: 0 },
+    isDeleted: { type: Boolean, default: false }, // Xóa mềm
+  },
+  { timestamps: true } // Tự động thêm createdAt và updatedAt
+);
+
+songSchema.index({ title: 1, artist: 1 }); // Tạo chỉ mục để tối ưu hóa tìm kiếm
 
 const Song = mongoose.model("Song", songSchema);
+
+module.exports = Song;
+
 
 // Function to create Genres and Rhythms (no changes here)
 const createGenresAndRhythms = async () => {

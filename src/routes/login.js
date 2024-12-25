@@ -4,6 +4,7 @@ const { User } = require("../models/user"); // Assuming validate is also used fo
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const passwordComplexity = require("joi-password-complexity"); 
+const Role=require("../models/role")
 // const session = require('express-session');
 router.post("/", async (req, res) => {
     try {
@@ -22,13 +23,17 @@ router.post("/", async (req, res) => {
       const validPassword = await bcrypt.compare(req.body.password, user.password);
       if (!validPassword) return res.status(401).send({ message: "Invalid email or password" });
   
-      // Generate a JWT token
-      const token = jwt.sign(
-        { _id: user._id, email: user.email, name:user.username },
-        process.env.JWTPRIVATEKEY,
-        { expiresIn: "1h" } // Token expires in 1 hour
+           // Fetch the user's role from the Role collection
+    const userRoleData = await Role.findOne({ username: user.username });
+    const userRole = userRoleData ? userRoleData.role : "user"; // Default to "user" if no role is found
+        // Generate a JWT token
+           console.log(userRoleData)
+        const token = jwt.sign(
+          { _id: user._id, email: user.email, name: user.username, role: userRole },
+          process.env.JWTPRIVATEKEY,
+          { expiresIn: "1h" } // Token expires in 1 hour
       );
-  console.log(user)
+
 
       // Send the token and user details in the response
       return res.status(200).send({
@@ -37,7 +42,8 @@ router.post("/", async (req, res) => {
         user: {
           _id: user._id,
           email: user.email,
-          name: user.username
+          name: user.username,
+          role: userRole, // Include role in response
         }
       });
     } catch (error) {

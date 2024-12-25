@@ -1,7 +1,8 @@
 require('dotenv').config();
 const nodemailer = require("nodemailer");
-
-module.exports = async (email, subject, text) => {
+const ejs = require("ejs");
+const path = require("path");
+module.exports = async (email, subject, templateName, data) => {
   try {
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
@@ -13,12 +14,13 @@ module.exports = async (email, subject, text) => {
         pass: "tfzd sxfu htsr rnfg",
       },
     });
+    const htmlContent = await ejs.renderFile(path.join(__dirname, `../views/emails/${templateName}.ejs`), data);
 
     await transporter.sendMail({
       from: process.env.USER,
       to: email,
       subject: subject,
-      text: text
+      html: htmlContent,
     });
     console.log("email sent successfully");
   } catch (error) {

@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
+const path = require('path');
 // const session = require('express-session');
 const connection = require("./config/database");
 const userRoutes = require("./routes/users");
@@ -15,35 +16,39 @@ const test=require('./routes/test');
 const list=require('./routes/list')
 const displaySong =require('./routes/displaySong')
 const listComments= require('./routes/listComments')
-const pagination=require('./routes/pagination')
+const songRequest=require('./routes/songrequest')
+const WebSocket = require('ws');
+const http = require('http'); 
+const Notification =require('./routes/notification')
 app.use(cors());
-
-// app.use(session({
-//     secret: process.env.JWTPRIVATEKEY, // Đảm bảo thay đổi secret này
-//     resave: false,
-//     saveUninitialized: true,
-//     cookie: { secure: true } // Đặt thành true nếu dùng HTTPS
-//   }));
-// database connection
+// Set EJS làm template engine
+app.set('view engine', 'ejs');
+app.use(express.urlencoded({ extended: true }));
+// Chỉ định thư mục chứa các view của bạn (nếu cần)
+app.set('views', path.join(__dirname, 'views'));
 connection();
+const server = http.createServer(app);  // Khởi tạo server HTTP từ express app
 
-// middlewares
+// Gọi route WebSocket và truyền server vào
+require('./routes/wsRoute')(server);
+
 app.use(express.json());
 
 
 // routes
 app.use('/api/genres', genreRoutes); // Sử dụng route cho thể loại
 app.use('/api/rhythms', rhythmRoutes); 
-app.use('/song', displaySong); 
+app.use('/', displaySong); 
 app.use("/login", login);
-app.use("/", addSong);
+app.use("/song", addSong);
 app.use("/test", test);
-app.use("/api/users", userRoutes);
+app.use("/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/list", list);
 app.use('/comment',addComment)
 app.use('/list',listComments)
-app.use('/user', list)
+app.use('/notifications',Notification)
+app.use('/request',songRequest)
 // app.use('/pages',pagination)
 // const hostname=process.env.HOSTNAME||'localhost'
 const port = process.env.PORT;
