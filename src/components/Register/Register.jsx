@@ -1,20 +1,22 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerUser } from '../../redux/authActions';
-import { TextField, Button, Box, Typography, CircularProgress } from '@mui/material';
+import { TextField, Button, Box, Typography, CircularProgress, Snackbar, Alert } from '@mui/material';
 import NavbarTop from '../Navbar/Navbar';
 import './Register.css';
 
 const Register = () => {
   const dispatch = useDispatch();
-  const loading = useSelector((state) => state.auth.loading); // Correct loading selector
-  const { error, successMessage } = useSelector((state) => state.auth); // Correct error and successMessage selector
+  const loading = useSelector((state) => state.auth.loading);
+  const { error, successMessage } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
     email: '',
     username: '',
     password: '',
   });
+
+  const [showSuccessSnackbar, setShowSuccessSnackbar] = useState(false);
 
   // Handle input changes
   const handleChange = (event) => {
@@ -37,8 +39,9 @@ const Register = () => {
     }
 
     try {
-      await dispatch(registerUser({ username, email, password })).unwrap();
-      // Optionally clear the form after successful registration
+      console.log(username, email, password);
+      await dispatch(registerUser({ email, username, password })).unwrap();
+      setShowSuccessSnackbar(true); // Show success snackbar
       setFormData({
         email: '',
         username: '',
@@ -47,6 +50,10 @@ const Register = () => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleSnackbarClose = () => {
+    setShowSuccessSnackbar(false);
   };
 
   return (
@@ -60,6 +67,16 @@ const Register = () => {
             Đăng ký thành viên
           </Typography>
           <form onSubmit={handleSubmit}>
+          <TextField
+            label="Tên đăng ký"
+            type="text"
+            name="username"
+              fullWidth
+              onChange={handleChange}
+              value={formData.username}
+              required
+              margin="normal"
+            />
             <TextField
               label="Email"
               type="email"
@@ -67,16 +84,6 @@ const Register = () => {
               fullWidth
               onChange={handleChange}
               value={formData.email}
-              required
-              margin="normal"
-            />
-            <TextField
-              label="Tên đăng nhập"
-              type="text"
-              name="username"
-              fullWidth
-              onChange={handleChange}
-              value={formData.username}
               required
               margin="normal"
             />
@@ -90,10 +97,9 @@ const Register = () => {
               required
               margin="normal"
             />
-            
-            {/* Display API errors and success messages */}
+
+            {/* Display API errors */}
             {error && <Typography color="error" sx={{ marginTop: 2 }}>{error}</Typography>}
-            {successMessage && <Typography color="success" sx={{ marginTop: 2 }}>{successMessage}</Typography>}
 
             <Button
               variant="contained"
@@ -108,6 +114,18 @@ const Register = () => {
           </form>
         </Box>
       </div>
+
+      {/* Success Snackbar */}
+      <Snackbar
+        open={showSuccessSnackbar}
+        autoHideDuration={4000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+          Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản.
+        </Alert>
+      </Snackbar>
     </>
   );
 };

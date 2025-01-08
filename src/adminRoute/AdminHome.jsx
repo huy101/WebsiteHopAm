@@ -5,9 +5,10 @@ import { fetchAllSongs, deleteSong } from "../redux/fecthListAction";  // Import
 import DataTable from "./DataTable";
 import PendingSongs from "./PendingSongs";
 import Requests from "./Request";
+import AddSong from "../components/AddNewSong/AddSong.jsx";
 import { fetchPending } from "../redux/fecthListAction";
 import { fetchSongById } from "../redux/fetchSongAction"; // Import action để fetch bài hát theo ID
-import {fetchRequests} from '../redux/requestSongSlice.js'
+import {fetchRequests,deleteRequests} from '../redux/requestSongSlice.js'
 import CreateSong from './CreateSong.jsx';
 import { Snackbar } from "@mui/material";
 import { Alert } from "@mui/material";
@@ -15,17 +16,15 @@ const AdminHome = () => {
   const dispatch = useDispatch();
   const { songs, loading, error } = useSelector((state) => state.list);
   const [tabValue, setTabValue] = React.useState("songs");
-  const [openModal, setOpenModal] = useState(false); // Trạng thái Modal
-  const [selectedItemId, setSelectedItemId] = useState(null); 
+  const [openDialog, setOpenDialog] = useState(false); // Trạng thái Modal
     const {requests}=useSelector((state) => state.songRequest );
     const [openSnackbar, setOpenSnackbar] = useState(false); 
     const [message, setMessage] = useState("");
     const [severity, setSeverity] = useState("success");
-    const [songToDelete, setSongToDelete] = useState(null);
-    const [openDialog, setOpenDialog] = useState(false);
-    const handleUpdateSuccess = () => {
-      dispatch(fetchAllSongs());  // Reload the list of songs after the update
-    };
+    
+   
+    const [successMessage, setSuccessMessage] = useState("");
+   
   // Fetch data when the component loads
   useEffect(() => {
     if (tabValue === "songs") {
@@ -37,56 +36,74 @@ const AdminHome = () => {
       dispatch(fetchRequests());console.log(tabValue)
     }
   }, [dispatch, tabValue]);
-
+ 
+  
   // Fetch dữ liệu bài hát khi nhấn nút Edit
-  const handleDeleteClick = (itemId) => {
-    setSongToDelete(itemId); // Store the ID of the song to be deleted
-    setOpenDialog(true); // Open the dialog
-  };
 
   // Confirm delete action
-  const handleConfirmDelete = () => {
-    if (!songToDelete) return;
 
-    dispatch(deleteSong(songToDelete))
-      .then(() => {
-        setMessage("Song deleted successfully!");
-        setSeverity("success");
-        setOpenSnackbar(true);
-        setOpenDialog(false); // Close dialog after successful deletion
-      })
-      .catch((error) => {
-        setMessage("Failed to delete song!");
-        setSeverity("error");
-        setOpenSnackbar(true);
-        setOpenDialog(false); // Close dialog even if error occurs
-      });
-  };
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
-
-  // Close the dialog
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
+  const handleUpdateSuccess = () => {
+    dispatch(fetchAllSongs());  // Reload the list of songs after the update
+    if(tabValue==="request"){
+      setMessage("Thêm bài hát thành công!");
+    }
+    else{
+    setMessage("Cập nhật bài hát thành công!");}
+    setSeverity("success");
+    setOpenSnackbar(true); 
   };
-
+  const handleDeleteSongError = () => {
+    console.error("Failed to delete the song.");
+    // Optionally display a toast or an error message here
+  };
+  const handleDeleteRequestSuccess = () => {
+    dispatch(fetchRequests());  // Reload the list of songs after the update
+    setMessage("Xóa yêu cầu thành công!");
+    setSeverity("success");
+    console.log("Request deleted successfully!");
+    setOpenSnackbar(true);
+  };
+  // Close the dialog
+ 
+  const handleDeleteSongSuccess=()=>{
+    dispatch(fetchAllSongs());
+    setMessage("Xóa bài hát thành công!");
+    setSeverity("success");
+    setOpenSnackbar(true);}
   // Close the snackbar
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
   };
+  
+  
   return (
     <Container maxWidth="xl" className="admin-home">
           <Typography variant="h4" align="center" gutterBottom>
-            Admin Dashboard
+           Quản lý bài hát
           </Typography>
 
       {/* Tabs */}
+     
       <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
         <Tabs value={tabValue} onChange={handleTabChange} indicatorColor="primary" textColor="primary">
-          <Tab label="List Songs" value="songs" />
-          <Tab label="Request" value="request" />
+        
+          <Tab label="Danh sách bài hát" value="songs" />
+          <Tab label="Yêu cầu" value="request" />
         </Tabs>
+        <Button variant="contained" color="primary"   sx={{
+                      marginLeft: "10px",
+                      backgroundColor: "#1976d2", 
+                      border: "2px solid #1976d2", 
+                      color: "#fff",  // Màu chữ
+                      
+                      borderRadius: "5px",   // Bo góc cho nút
+                      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Thêm bóng đổ
+                    }}  onClick={() =>setOpenDialog(true)}>
+                                  Thêm bài hát
+                                </Button>
       </Box>
 
       <Box sx={{ padding: 3 }}>
@@ -97,39 +114,27 @@ const AdminHome = () => {
               data={songs} 
               loading={loading} 
               error={error} 
-              onEditClick={handleDeleteClick} 
-              onDeleteClick={handleDeleteClick}
-              onUpdateSuccess={handleUpdateSuccess} 
-              isRequest={false}  // Truyền onDeleteClick vào DataTable
+              onDeleteSongSuccess={handleDeleteSongSuccess}
+              onUpdateSuccess={handleUpdateSuccess}
+
             />
           </Box>
         )}
 
         
-        {tabValue === "request" && <DataTable tabValue='request' data={requests}  isRequest={true}
+        {tabValue === "request" && (<Box>
+          <DataTable tabValue='request' data={requests}   onDeleteSongError={handleDeleteSongError} onDeleteRequestsSuccess={handleDeleteRequestSuccess}  isRequest={true}
               loading={loading} 
-              error={error}  onEditClick={handleDeleteClick} onDeleteClick={handleDeleteClick} />}
+              error={error}   
+              onUpdateSuccess={handleUpdateSuccess} />
+        </Box> )}
       </Box>
         {/* Delete Confirmation Dialog */}
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Confirm Deletion</DialogTitle>
-        <DialogContent>
-          Are you sure you want to delete this song? This action cannot be undone.
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleConfirmDelete} color="secondary">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
-
+      
       {/* Snackbar for success/error */}
       <Snackbar
   open={openSnackbar}
-  autoHideDuration={6000}
+  autoHideDuration={3000}
   onClose={handleCloseSnackbar}
   anchorOrigin={{
     vertical: 'top',  // Position the Snackbar at the bottom of the screen
@@ -140,7 +145,9 @@ const AdminHome = () => {
     {message}
   </Alert>
 </Snackbar>
-
+<Dialog open={openDialog}  onClose={() => setOpenDialog(false)}> <DialogTitle>Thêm bài hát</DialogTitle>
+  <DialogContent><AddSong/></DialogContent>
+</Dialog>
     </Container>
   );
 };

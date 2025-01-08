@@ -141,7 +141,7 @@ export const deleteSong = createAsyncThunk(
         initialState: {
           songs: [],
           popular: [],
-          searchSongs:[],
+          searchSong:[],
           recent: [],
           loading: false,
           error: null,

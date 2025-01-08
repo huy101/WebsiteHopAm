@@ -89,7 +89,6 @@
   
   /* Buttons styling */
   .MuiButton-root {
-    text-transform: none;
     font-weight: 500;
     padding: 0.5rem 1.25rem;
     border-radius: 4px;

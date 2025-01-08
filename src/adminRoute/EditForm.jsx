@@ -7,7 +7,7 @@ import { TextField, Button, FormControlLabel, Checkbox, FormControl, InputLabel,
 import { fetchGenres } from '../redux/genreSlice';
 import { fetchRhythms } from '../redux/rhythmSlice';
 
-const UpdateSongForm = ({ itemId, closeModal ,onSuccess}) => {
+const UpdateSongForm = ({ itemId, closeModal ,onUpdateSuccess}) => {
   const extractChords = (lyrics) => {
     const regex = /\[(.*?)\]/g;
     let matches = [];
@@ -47,7 +47,10 @@ const UpdateSongForm = ({ itemId, closeModal ,onSuccess}) => {
     if (songData && songData.song && songData.song.title) {
       setFormData({
         title: songData.song.title || "",
-        artist: songData.song.artist || "",
+        artist: songData.song.artist 
+        ? songData.song.artist.map(artist => artist.name ? artist.name : 'Unknown').join(', ') 
+        : "",
+      
         videoId: songData.song.videoId || "",
         tone: songData.song.tone || "",
         genreId: songData.song.genre ? songData.song.genre._id : "",
@@ -82,7 +85,10 @@ const UpdateSongForm = ({ itemId, closeModal ,onSuccess}) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (songData && songData.song) {
-      dispatch(updateSong({ id: itemId, updatedData: formData })).then(() => {    onSuccess();
+      dispatch(updateSong({ id: itemId, updatedData: formData })).then(() => {    if (onUpdateSuccess) {console.log("Update success");
+        onUpdateSuccess();
+        
+      }
         closeModal(); // Close modal on success
       });
     }
@@ -95,36 +101,72 @@ const UpdateSongForm = ({ itemId, closeModal ,onSuccess}) => {
 
       <FormControl fullWidth margin="normal">
         <InputLabel>Tone</InputLabel>
-        <Select name="tone" value={formData.tone} onChange={handleChange}>
-          {["C", "D", "E", "F", "G", "A", "B", "Cm", "Dm", "Em", "Fm", "Gm", "Am", "Bm"].map((toneOption) => (
-            <MenuItem key={toneOption} value={toneOption}>
-              {toneOption}
-            </MenuItem>
-          ))}
-        </Select>
+        <Select
+  name="tone"
+  value={formData.tone || ""}
+  onChange={handleChange}
+  MenuProps={{
+    PaperProps: {
+      style: {
+        maxHeight: 200, // Giới hạn chiều cao menu
+        overflowY: "auto", // Bật cuộn khi danh sách dài
+      },
+    },
+  }}
+>
+  {["C", "D", "E", "F", "G", "A", "B", "Cm", "Dm","D#m", "Em", "Fm", "Gm", "Am", "Bm"].map((toneOption) => (
+    <MenuItem key={toneOption} value={toneOption}>
+      {toneOption}
+    </MenuItem>
+  ))}
+</Select>
       </FormControl>
 
       <FormControl fullWidth margin="normal">
         <InputLabel>Genre</InputLabel>
-        <Select name="genreId" value={formData.genreId} onChange={handleChange}>
-          {genres?.map((genre) => (
-            <MenuItem key={genre._id} value={genre._id}>
-              {genre.name}
-            </MenuItem>
-          ))}
-        </Select>
+        <Select
+  name="genreId"
+  value={formData.genreId || ""}
+  onChange={handleChange}
+  MenuProps={{
+    PaperProps: {
+      style: {
+        maxHeight: 200, // Giới hạn chiều cao menu
+        overflowY: "auto", // Bật cuộn dọc khi danh sách dài
+      },
+    },
+  }}
+>
+  {genres?.map((genre) => (
+    <MenuItem key={genre._id} value={genre._id}>
+      {genre.name}
+    </MenuItem>
+  ))}
+</Select>
       </FormControl>
 
       <FormControl fullWidth margin="normal">
         <InputLabel>Rhythm</InputLabel>
-        <Select name="rhythmId" value={formData.rhythmId || ""} onChange={handleChange}>
-          <MenuItem value="">Select Rhythm</MenuItem>
-          {rhythms?.map((rhythm) => (
-            <MenuItem key={rhythm._id} value={rhythm._id}>
-              {rhythm.name}
-            </MenuItem>
-          ))}
-        </Select>
+        <Select
+  name="rhythmId"
+  value={formData.rhythmId || ""}
+  onChange={handleChange}
+  MenuProps={{
+    PaperProps: {
+      style: {
+        maxHeight: 200, // Giới hạn chiều cao menu
+        overflowY: "auto", // Cho phép cuộn khi nội dung vượt quá
+      },
+    },
+  }}
+>
+  <MenuItem value="">Select Rhythm</MenuItem>
+  {rhythms?.map((rhythm) => (
+    <MenuItem key={rhythm._id} value={rhythm._id}>
+      {rhythm.name}
+    </MenuItem>
+  ))}
+</Select>
       </FormControl>
 
       <TextField label="Video ID" name="videoId" value={formData.videoId} onChange={handleChange} fullWidth margin="normal" />

@@ -3,7 +3,6 @@
   import { fetchGenres } from '../../redux/genreSlice'; 
   import { fetchRhythms } from '../../redux/rhythmSlice'; 
   import addSong from '../../redux/addAction';
-  import NavbarTop from '../Navbar/Navbar';
   import { useNavigate } from 'react-router-dom';
   import {
     Container,
@@ -27,14 +26,13 @@
     const [selectedGenre, setSelectedGenre] = useState('');
     const [selectedRhythm, setSelectedRhythm] = useState('');
     const [title, setTitle] = useState('');
-    const [artist, setArtist] = useState('');
+    const [artists, setArtists] = useState('');
     const [tone, setTone] = useState('C'); 
     const [lyrics, setLyrics] = useState('');
     const userId = localStorage.getItem('userId');
     const [videoUrl, setVideoUrl] = useState(''); 
   const [message, setMessage] = useState("");
     const [error, setError] = useState("");
-
     useEffect(() => {
       if (!userId) {
         alert('Vui lòng đăng nhập để thêm bài hát.');
@@ -49,14 +47,15 @@
 
     const handleSubmit = (e) => {
       e.preventDefault();
-      if (!title || !artist || !selectedGenre || !selectedRhythm || !lyrics) {
+      if (!title || !artists || !selectedGenre || !selectedRhythm || !lyrics) {
         setError('Vui lòng điền đầy đủ thông tin trước khi đăng bài.');
         return; // Ngừng thực hiện nếu thiếu thông tin
       }
+      const artistArray = artists ? artists.split(',').map(artist => artist.trim()) : [];
       const videoId = extractVideoId(videoUrl); 
       const newSong = {
         title,
-        artist,
+        artist:artistArray,
         genre: selectedGenre,
         rhythm: selectedRhythm,
         tone,
@@ -134,8 +133,8 @@
               fullWidth
               label="Ca sĩ"
               variant="outlined"
-              value={artist}
-              onChange={(e) => setArtist(e.target.value)}
+              value={artists}
+              onChange={(e) => setArtists(e.target.value)}
               margin="normal"
               sx={{
                 marginBottom: '16px', // Add margin below the input field
@@ -196,17 +195,41 @@
             <FormControl fullWidth margin="normal">
               <InputLabel>Tone chủ bài hát</InputLabel>
               <Select
-                value={tone}
-                onChange={(e) => setTone(e.target.value)}
-              >
-                {["C", "D", "E", "F", "G", "A", "B", "Cm", "Dm", "Em", "Fm", "Gm", "Am", "Bm"].map(
-                  (toneOption) => (
-                    <MenuItem key={toneOption} value={toneOption}>
-                      {toneOption}
-                    </MenuItem>
-                  )
-                )}
-              </Select>
+  sx={{ overflowY: "hidden" }}
+  value={tone}
+  onChange={(e) => setTone(e.target.value)}
+  MenuProps={{
+    PaperProps: {
+      style: {
+        maxHeight: 200, // Giới hạn chiều cao menu
+        overflowY: "auto", // Cho phép cuộn
+      },
+    },
+  }}
+>
+  {[
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "A",
+    "B",
+    "Cm",
+    "Dm",
+    "D#m",
+    "Em",
+    "Fm",
+    "Gm",
+    "Am",
+    "Bm",
+    
+  ].map((toneOption) => (
+    <MenuItem key={toneOption} value={toneOption}>
+      {toneOption}
+    </MenuItem>
+  ))}
+</Select>
             </FormControl>
             {/* Video URL */}
             <TextField

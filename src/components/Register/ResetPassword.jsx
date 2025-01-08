@@ -30,7 +30,7 @@ const ResetPassword = () => {
     if (message) {
       setNotification({
         type: "success",
-        content: message,
+        content: "Email đặt lại mật khẩu đã được gửi",
       });
     }
   }, [message]);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React ,{useEffect} from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/Home/Home';
 import Login from './components/Login/Login';
@@ -13,9 +13,8 @@ import ListSong from './components/ListSong/ListSong';
 import AdminHome from './adminRoute/AdminHome.jsx';
 import PrivateRoute from './privateRoute.jsx';
 import PostedSongs from './components/posted/Posted';
-import Metronome from './components/Metronome/Metronome.jsx';
 import RequestSongForm from './components/requestSong/RequestSongForm.jsx';
-function App() {
+function App() { 
   return (
 
     <Provider store={store}>
@@ -33,10 +32,8 @@ function App() {
         <Route path="/list/rhythm/:rhythmId" element={<ListSong />} />
         <Route path="/list/artist/:artistName" element={<ListSong />} />
         <Route path="/search/:query" element={<ListSong />} />
-        <Route path="/metronome" element={<Metronome/>} />
         <Route path="/request" element={<RequestSongForm/>} />
         <Route path="/posted" element={<PostedSongs/>} />
-        <Route path="/metronome" element={<Metronome />} />
         <Route path="/restpassword" element={<ResetPassword />} />
         <Route path="/list/search/:query" element={<ListSong />} />
         {/* <Route path="/tuner" element={<Tuner />} /> */}

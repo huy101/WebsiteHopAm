@@ -4,8 +4,8 @@ import { KeyboardArrowUp, Twitter, LinkedIn, GitHub } from '@mui/icons-material'
 import { styled } from '@mui/material/styles';
 
 const StyledFooter = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'dark' ? '#1a1a2e' : '#f8f9fa',
-  color: theme.palette.mode === 'dark' ? '#fff' : '#1a1a2e',
+  backgroundColor: theme.palette.mode === 'dark' ? '#e4e4e4' : '#e4e4e4',
+  color: theme.palette.mode === 'dark' ? '#e4e4e4' : '#1a1a2e',
   position: 'relative',
   overflow: 'hidden',
   
@@ -70,28 +70,28 @@ const Footer = () => {
           <Grid container >
             <Grid item xs={12} sm={4}>
               <Typography variant="h6" fontWeight="bold" gutterBottom>
-                Company
+                Giới thiệu
               </Typography>
               <Box display="flex" flexDirection="column" gap={2}>
-                <StyledLink href="/about">About</StyledLink>
-                <StyledLink href="/careers">Careers</StyledLink>
-                <StyledLink href="/contact">Contact</StyledLink>
+                <StyledLink href="/about">Hướng dẫn</StyledLink>
+                <StyledLink href="/careers"></StyledLink>
+                <StyledLink href="/contact"></StyledLink>
               </Box>
             </Grid>
 
             <Grid item xs={12} sm={4}>
               <Typography variant="h6" fontWeight="bold" gutterBottom textAlign="center">
-                Legal
+                Quy định bản quyền
               </Typography>
               <Box display="flex" flexDirection="column" gap={2} alignItems="center">
-                <StyledLink href="/privacy">Privacy Policy</StyledLink>
-                <StyledLink href="/terms">Terms of Service</StyledLink>
+                <StyledLink href="/privacy">Điều khoản dịch vụ</StyledLink>
+                <StyledLink href="/terms"></StyledLink>
               </Box>
             </Grid>
 
             <Grid item xs={12} sm={4}>
               <Typography variant="h6" fontWeight="bold" gutterBottom textAlign={{ xs: 'left', sm: 'right' }}>
-                Connect With Us
+                Liên hệ với chúng tôi
               </Typography>
               <Box display="flex" justifyContent={{ xs: 'flex-start', sm: 'flex-end' }} gap={1}>
                 <SocialButton>

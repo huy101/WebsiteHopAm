@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useGetCommentsQuery, useAddCommentMutation } from '../../redux/commentsSlice'; // Import both hooks
+import { useGetCommentsQuery, useAddCommentMutation } from '../../redux/commentsSlice';
 import { Button, TextField, Box, Typography, Paper, CircularProgress, Divider } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Swal from 'sweetalert2';
 
 const CommentSection = ({ songId }) => {
-  const { data: comments, isLoading, error } = useGetCommentsQuery();  // Fetch comments from RTK Query
+  const { data: comments, isLoading, error } = useGetCommentsQuery();
   const { token } = useSelector((state) => state.auth);
-
+  const [displayCount, setDisplayCount] = useState(5);
   const [content, setContent] = useState('');
   const [username, setUsername] = useState('');
   const [userId, setUserId] = useState('');
@@ -15,10 +16,8 @@ const CommentSection = ({ songId }) => {
   const storedUsername = localStorage.getItem('userName');
   const storedUserId = localStorage.getItem('userId');
   const storedRole = localStorage.getItem('userRole');
-  // Load user details from localStorage
-  useEffect(() => {
-   
 
+  useEffect(() => {
     if (storedUsername) {
       setUsername(storedUsername);
       setUserId(storedUserId);
@@ -26,10 +25,12 @@ const CommentSection = ({ songId }) => {
     }
   }, []);
 
-  // Use the mutation hook to add a comment
   const [addComment] = useAddCommentMutation();
 
-  // Handle submitting a comment
+  const handleViewMore = () => {
+    setDisplayCount(prevCount => prevCount + 5);
+  };
+
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!storedUserId) {
@@ -40,14 +41,25 @@ const CommentSection = ({ songId }) => {
         confirmButtonText: 'Đăng nhập',
         showCancelButton: true,
         cancelButtonText: 'Hủy',
+        customClass: {
+          confirmButton: 'custom-confirm-button', // Custom class for confirm button
+        },
+        willOpen: () => {
+          const confirmButton = document.querySelector('.swal2-confirm');
+          if (confirmButton) {
+            confirmButton.style.backgroundColor = '#007bff'; // Custom background color
+            confirmButton.style.color = 'white'; // Custom text color
+            confirmButton.style.border = 'none'; // Remove border
+          }
+        },
       }).then((result) => {
         if (result.isConfirmed) {
-          // Chuyển hướng sang trang đăng nhập
-          window.location.href = '/login'; // Thay '/login' bằng URL của trang đăng nhập của bạn
+          window.location.href = '/login';
         }
       });
       return;
     }
+    
     if (content.trim() && token) {
       const mentionPattern = /@([a-zA-Z0-9_]+)/g;
       const mentions = content.match(mentionPattern) || [];
@@ -66,16 +78,14 @@ const CommentSection = ({ songId }) => {
       }
 
       try {
-        // Dispatch action to add comment using the RTK Query hook
         await addComment({ songId, userId, content }).unwrap();
-        setContent(''); // Reset input after submit
+        setContent('');
       } catch (err) {
         console.error('Failed to add comment: ', err);
       }
     }
   };
 
-  // Loading and error handling
   if (isLoading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100px">
@@ -92,10 +102,11 @@ const CommentSection = ({ songId }) => {
     );
   }
 
+  const filteredComments = comments.filter((comment) => comment.songId === songId);
+
   return (
     <Box>
-      {/* Comment input form */}
-      <Paper sx={{ padding: 3, maxWidth: 600, margin: 'auto', marginBottom: 2 }}>
+      <Paper sx={{ padding: 3, maxWidth: 600, margin: 'auto' }}>
         <Typography variant="h6" gutterBottom>
           <i className="fas fa-comments"></i> Nhập bình luận
         </Typography>
@@ -120,28 +131,45 @@ const CommentSection = ({ songId }) => {
           </Box>
 
           <Box display="flex" justifyContent="flex-start" gap={2}>
-            <Button type="submit" variant="contained" color="primary" size="small" onClick={handleCommentSubmit}>
+            <Button 
+              type="submit" 
+              variant="contained" 
+              color="primary" 
+              size="small" 
+              onClick={handleCommentSubmit}
+            >
               Gửi
             </Button>
-            
           </Box>
         </form>
       </Paper>
 
-      {/* Displaying comments */}
-      {comments
-        .filter((comment) => comment.songId === songId)
-        .map((comment) => (
-          <Paper key={comment._id} elevation={3} sx={{ padding: 2, marginBottom: 2 }}>
-            <Typography variant="h6" color="primary">
-              {comment.userId.username}
-            </Typography>
-            <Typography variant="body1" sx={{ marginBottom: 1 }}>
-              {comment.content}
-            </Typography>
-            <Divider />
-          </Paper>
-        ))}
+      {/* Displaying comments with pagination */}
+      {filteredComments.slice(0, displayCount).map((comment) => (
+        <Paper key={comment._id} elevation={3} sx={{ padding: 2, marginBottom: 2 }}>
+          <Typography variant="h6" color="primary">
+            {comment.userId.username}
+          </Typography>
+          <Typography variant="body1" sx={{ marginBottom: 1 }}>
+            {comment.content}
+          </Typography>
+          <Divider />
+        </Paper>
+      ))}
+
+      {/* View More button */}
+      {filteredComments.length > displayCount && (
+        <Box display="flex" justifyContent="center" mt={2} mb={2}>
+          <Button
+            variant="text"
+            onClick={handleViewMore}
+            startIcon={<ExpandMoreIcon />}
+            sx={{ textTransform: 'none' }}
+          >
+            Xem thêm bình luận
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 };

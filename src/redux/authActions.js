@@ -16,7 +16,7 @@ export const registerUser = createAsyncThunk(
   'auth/registerUser',
   async (newUser, { rejectWithValue }) => {
     try {
-      const response = await axios.post('http://localhost:8080/api/users', newUser, {
+      const response = await axios.post('http://localhost:8080/users/register', newUser, {
         headers: { 'Content-Type': 'application/json' },
       });
       return response.data;
@@ -31,7 +31,7 @@ export const forgotPassword = createAsyncThunk(
   'auth/forgotPassword',
   async (email, { rejectWithValue }) => {
     try {
-      const response = await axios.post('http://localhost:8080/users/forgot-password', { email });
+      const response = await axios.post('http://localhost:8080/api/users/forgot-password', { email });
       return response.data; // Giả sử backend trả về thông báo
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Failed to send password reset email.';

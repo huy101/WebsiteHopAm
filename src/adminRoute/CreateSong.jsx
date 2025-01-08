@@ -6,7 +6,7 @@ import { TextField, Button, FormControlLabel, Checkbox, FormControl, InputLabel,
 import { fetchGenres } from '../redux/genreSlice';
 import { fetchRhythms } from '../redux/rhythmSlice';
 import {createSongFromRequest} from '../redux/requestSongSlice'
-const CreateSong = ({ itemId, closeModal }) => {  const extractChords = (lyrics) => {
+const CreateSong = ({ itemId, closeModal, onUpdateSuccess }) => {  const extractChords = (lyrics) => {
   const regex = /\[(.*?)\]/g;
   let matches = [];
   let match;
@@ -43,7 +43,7 @@ const CreateSong = ({ itemId, closeModal }) => {  const extractChords = (lyrics)
     if (selectedRequest && selectedRequest.title) {
       setFormData({
         title: selectedRequest.title || "",
-        artist: selectedRequest.artist || "",
+        artist: Array.isArray(selectedRequest.artist) ? selectedRequest.artist : [],
         videoId: selectedRequest.videoId || "",
         tone: selectedRequest.tone || "",
         genreId: selectedRequest.genre ? selectedRequest.genre._id : "",
@@ -61,7 +61,13 @@ const CreateSong = ({ itemId, closeModal }) => {  const extractChords = (lyrics)
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    if (name.startsWith('lyrics')) {
+    if (name === "artist") {
+      setFormData((prev) => ({
+        ...prev,
+        artist: value.split(',').map((artist) => artist.trim()), // Split the input string by commas into an array
+      }));
+    } 
+    else if (name.startsWith('lyrics')) {
       // Update specific lyric verse
       const index = parseInt(name.split('-')[1], 10); // Get the lyric index
       setFormData((prev) => {
@@ -85,7 +91,7 @@ const CreateSong = ({ itemId, closeModal }) => {  const extractChords = (lyrics)
           requestId: itemId,
           data: { ...formData, userId: selectedRequest.userId },
         })
-      ).then(() => {
+      ).then(() => {  onUpdateSuccess();
         closeModal(); // Close the modal on success
       });
     }
@@ -95,7 +101,7 @@ const CreateSong = ({ itemId, closeModal }) => {  const extractChords = (lyrics)
   return (
       <form onSubmit={handleSubmit}>
         <TextField label="Title" name="title" value={formData.title} onChange={handleChange} fullWidth margin="normal" />
-        <TextField label="Artist" name="artist" value={formData.artist} onChange={handleChange} fullWidth margin="normal" />
+        <TextField label="Artist" name="artist" value={Array.isArray(formData.artist) ? formData.artist.join(', ') : ""} onChange={handleChange} fullWidth margin="normal" />
   
         <FormControl fullWidth margin="normal">
           <InputLabel>Tone</InputLabel>

@@ -14,8 +14,16 @@ import axios from 'axios';
       // Trả về dữ liệu sau khi bài hát đã được thêm
 
     } catch (error) {
-      // Xử lý lỗi nếu có
-      return rejectWithValue(error.response.data);
+      // Xử lý lỗi nếu cóconsole.error('Error adding song:', error);
+
+      // Reject the promise with the error message from the backend (if exists)
+      // Adjust 'error.response.data' if the backend sends the error differently
+      if (error.response && error.response.data) {
+        return rejectWithValue(error.response.data);
+      } else {
+        // If the error does not have a response (e.g., network error), send a generic message
+        return rejectWithValue('There was an error while adding the song.');
+      }
     }
   }
 );

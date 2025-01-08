@@ -49,7 +49,6 @@
   margin: 24px 0;
   padding: 12px;
   border-radius: 8px;
-  text-transform: none;
   font-weight: 600;
   transition: transform 0.2s ease-in-out;
 }

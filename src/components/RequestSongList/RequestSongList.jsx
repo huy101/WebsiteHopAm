@@ -12,15 +12,22 @@ const RequestSongList = () => {
   }, [dispatch]);
 
   // Phân tách danh sách theo trạng thái
-  const approvedRequests = requests.filter(request => request.status === "approved");
-  const pendingRequests = requests.filter(request => request.status !== "approved");
+  const approvedRequests = requests.filter(request => request.status === true);
+  const pendingRequests = requests.filter(request => request.status ===false);
+
+  const renderArtistNames = (artist) => {
+    // Handle artist field, whether it's an array or a string
+    if (Array.isArray(artist)) {
+      return artist.map((artistObj) => artistObj.name || artistObj).join(', ');
+    }
+    return artist; // If it's a string
+  };
 
   return (
     <Box
-      sx={{display: "flex", flexDirection: "column", padding: "1rem", justifyContent: "center",
-        maxWidth: "600px",
-        margin: "1rem auto",
-        borderRadius: "8px",
+      sx={{
+        display: "flex", flexDirection: "column", padding: "1rem", justifyContent: "center",
+        maxWidth: "600px", margin: "1rem auto", borderRadius: "8px",
       }}
     >
       <Typography variant="h6" align="center" gutterBottom sx={{ marginBottom: "5px" }}>
@@ -28,28 +35,21 @@ const RequestSongList = () => {
       </Typography>
 
       {/* Danh sách bài hát đã duyệt */}
-      <Typography variant="h6" gutterBottom  sx={{
-          
-          marginBottom: "0px",
-        }}>
+      <Typography variant="h6" gutterBottom sx={{ marginBottom: "0px" }}>
         Bài hát đã duyệt
       </Typography>
-      <List >
+      <List>
         {approvedRequests && approvedRequests.length > 0 ? (
           approvedRequests.map((request) => (
             <React.Fragment key={request._id}>
-              <ListItem sx={{marginBottom: "0px"}}>
+              <ListItem sx={{ marginBottom: "0px" }}>
                 <ListItemText
                   primary={
-                    <span style={{ textDecoration: "line-through" }}>
-                      {request.title} - {request.artist}
-                    </span>
+                    <Typography style={{ textDecoration: "line-through" }}>
+                      {request.title} - {renderArtistNames(request.artist)}
+                    </Typography>
                   }
-                  secondary={
-                   
-                      <Typography>{request.requestedAt}</Typography>
-                   
-                  }
+                  secondary={<Typography>{request.requestedAt}</Typography>}
                 />
               </ListItem>
               <Divider />
@@ -70,10 +70,8 @@ const RequestSongList = () => {
             <React.Fragment key={request._id}>
               <ListItem>
                 <ListItemText
-                  primary={request.title + " - " + request.artist}
-                  secondary={
-                      <Typography>{request.requestedAt}</Typography>
-                  }
+                  primary={request.title + " - " + renderArtistNames(request.artist)}
+                  secondary={<Typography>{request.requestedAt}</Typography>}
                 />
               </ListItem>
               <Divider />

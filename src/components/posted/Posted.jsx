@@ -68,7 +68,7 @@ const PostedSongs = () => {
                             <a href={`/chord/${song._id}`} style={{ textDecoration: 'none' }}>{song.title}</a>
                           </Typography>
                         </TableCell>
-                        <TableCell>{song.artist}</TableCell>
+                        <TableCell>{song.artist.map((artist) => artist.name).join(', ')}</TableCell>
                         <TableCell>227727</TableCell> {/* Replace with actual view count if available */}
                       </TableRow>
                     ))}

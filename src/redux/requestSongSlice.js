@@ -54,6 +54,26 @@ export const fetchRequests = createAsyncThunk(
     }
   }
 );
+// Async thunk để xóa nhiều yêu cầu bài hát
+export const deleteRequests = createAsyncThunk(
+  "songRequest/deleteRequests",
+  async (requestIds, { rejectWithValue }) => {
+    try {
+      // Gửi yêu cầu xóa các ID yêu cầu từ frontend
+      const response = await axios.delete("http://localhost:8080/request/multiple", {
+        data: { requestIds },
+      });
+
+      return response.data; // Trả về thông báo thành công
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Đã xảy ra lỗi khi xóa yêu cầu bài hát!";
+      console.error("Error in deleteRequests:", errorMessage);
+      return rejectWithValue(errorMessage); // Trả về lỗi nếu có
+    }
+  }
+);
+
 // Thunk để fetch một request cụ thể
 export const fetchRequestById = createAsyncThunk(
   'songRequest/fetchRequestById',
@@ -127,6 +147,22 @@ const songRequestSlice = createSlice({
         state.loading = false;
         state.successMessage = "";
         state.errorMessage = action.payload;
+      })
+      .addCase(deleteRequests.fulfilled, (state, action) => {
+        state.loading = false;
+        state.successMessage = action.payload.message; // Lấy message từ API khi xóa thành công
+        state.errorMessage = "";
+        
+        // Cập nhật lại danh sách requests sau khi xóa
+        const remainingRequests = state.requests.filter(
+          (request) => !action.payload.deletedIds.includes(request.id) // Xóa các yêu cầu đã được xóa
+        );
+        state.requests = remainingRequests;
+      })
+      .addCase(deleteRequests.rejected, (state, action) => {
+        state.loading = false;
+        state.successMessage = "";
+        state.errorMessage = action.payload; // Lấy lỗi từ rejectWithValue
       });
   },
 });
