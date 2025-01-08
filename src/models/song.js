@@ -17,7 +17,8 @@ const Chord = mongoose.model("Chord", chordSchema);
 const songSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, index: true },
-    artist: { type: String }, // Tham chiếu đến bảng Artist
+    artist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Artist" }],
+
     genre: { type: mongoose.Schema.Types.ObjectId, ref: "Genre", required: true },
     rhythm: { type: mongoose.Schema.Types.ObjectId, ref: "Rhythm", required: true },
     tone: { type: String, default: "C" }, // Giá trị mặc định cho tone
@@ -30,6 +31,7 @@ const songSchema = new mongoose.Schema(
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     videoId: { type: String },
     viewCount: { type: Number, default: 0 },
+    viewMonth: { type: Number, default: 0 },
     isDeleted: { type: Boolean, default: false }, // Xóa mềm
   },
   { timestamps: true } // Tự động thêm createdAt và updatedAt
@@ -50,6 +52,7 @@ const createGenresAndRhythms = async () => {
     { name: "Nhạc Cổ Điển" },
     { name: "Nhạc Pop" },
     { name: "Nhạc Đỏ" },
+    { name: "Nhạc Dân Ca" },
   ];
 
   const rhythms = [

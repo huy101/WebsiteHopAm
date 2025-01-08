@@ -5,8 +5,8 @@ const Token = require("../models/token");
 const crypto = require("crypto");
 const sendEmail = require("../untils/sendEmail");
 const bcrypt = require("bcrypt");
-
-router.post("/", async (req, res) => {
+const Role = require("../models/role"); 
+router.post("/register", async (req, res) => {
 	try {
 	  const BASE_URL = process.env.BASE_URL;
   
@@ -31,8 +31,15 @@ router.post("/", async (req, res) => {
 		token: crypto.randomBytes(32).toString("hex"),
 	  }).save();
   
-	  const url = `${BASE_URL}api/users/${user.id}/verify/${token.token}`;
-	  await sendEmail(user.email, "Verify Email", url);
+	  const url = `${process.env.BASE_URL}api/users/verify/${user.id}/${token.token}`;
+			  
+			  // Send the email with the verification link
+			  const emailData = {
+				username: user.username, // Truyền username vào
+				verificationUrl: url, 
+			  };
+		  
+			  await sendEmail(user.email, "Verify Email", "register", emailData); 
   
 	  return res.status(201).send({ message: "An email has been sent to your account. Please verify." });
 	} catch (error) {
@@ -42,35 +49,48 @@ router.post("/", async (req, res) => {
   });
   
 
-router.get("/:id/verify/:token", async (req, res) => {
-	try {
-	  const user = await User.findOne({ _id: req.params.id });
-	  if (!user) {
-		return res.status(400).send({ message: "Invalid link" });
-	  }
-  
-	  const token = await Token.findOne({
-		userId: user._id,
-		token: req.params.token,
+
+	router.get("/verify/:userId/:token", async (req, res) => {
+		try {
+		  const { userId, token } = req.params;
+	  
+		  // Find the user by ID
+		  const user = await User.findById(userId);
+		  if (!user) return res.status(400).render("email/verifyEmail", { status: 'error', message: "Invalid link" });
+	  
+		  // Find the token associated with the user
+		  const verificationToken = await Token.findOne({
+			userId: user._id,
+			token,
+		  });
+		  if (!verificationToken) return res.status(400).render("emails/verifyEmail", { status: 'error', message: "Invalid link" });
+	  
+		  // Verify the user's email
+		  user.verified = true;
+		  await user.save();
+	  
+		  // Create the 'user' role for the user after email verification
+		  const role = new Role({
+			userId: user._id,
+			username: user.username,  // Assuming the User model has a 'username' field
+			role: 'user',  // Default role is 'user'
+		  });
+		  await role.save();
+	  
+		  // Delete the token to prevent reuse
+		  await Token.deleteOne({ userId: user._id, token });
+	  
+		  // Render the success page with the URL for login
+		  const url = `http://localhost:3000/login`; // The link to redirect users to the login page
+		  res.status(200).render("emails/verifyEmail", { status: 'success', url });
+		} catch (error) {
+		  console.error(error); // Log the error
+		  res.status(500).render("emails/verifyEmail", { status: 'error', message: "Internal Server Error" });
+		}
 	  });
-	  if (!token) {
-		return res.status(400).send({ message: "Invalid link" });
-	  }
-  
-	  // Update the verified field to true for the given user ID
-	  await User.updateOne({ _id: user._id }, { verified: true });
-  
-	  return res.status(200).send({ message: "Email verified successfully" });
-	  await token.remove();
-	} catch (error) {
-	  console.error(error); // Log the error to help with debugging
-	  return res.status(500).send({ message: "Internal Server Error" });
-	}
-  });
   
   router.get("/list", async (req, res) => {
 	try {
-	  // Chỉ lấy các trường id, title, và artist
 	  const users = await User.find();
 	  res.json(users);
 	  console.log(users)
@@ -98,7 +118,7 @@ router.post("/forgot-password", async (req, res) => {
   
 	  await savedToken.save();
   
-	  const resetLink = `${process.env.BASE_URL}users/reset-password/${user._id}/${randomToken}`;
+	  const resetLink = `${process.env.BASE_URL}api/users/reset-password/${user._id}/${randomToken}`;
 	  const emailData = { name: user.name, resetLink };
   
 	  await sendEmail(user.email, "Reset Your Password", "resetPassword", emailData);
@@ -188,7 +208,7 @@ router.post("/forgot-password", async (req, res) => {
 		</head>
 		<body>
 		  <h1>Reset Your Password</h1>
-		  <form action="http://localhost:8080/users/reset-password/${id}/${token}" method="POST" onsubmit="validateForm(event)">
+		  <form action="http://localhost:8080/api/users/reset-password/${id}/${token}" method="POST" onsubmit="validateForm(event)">
 			<label for="password">New Password:</label>
 			<input type="password" id="password" name="password" required />
 			<br />

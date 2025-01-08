@@ -6,11 +6,11 @@ const mongoose = require("mongoose");
 const {User}=require('../models/user')
 const checkApproval=require('../middleware/checkAproval')
 const Fuse = require('fuse.js');
+const { Artist } = require('../models/artist');
 // Fetch songs by genre
 router.get("/all", async (req, res) => {
   try {
-    // Chỉ lấy các trường id, title, và artist
-    const songs = await Song.find();
+    const songs = await Song.find().populate('artist', 'name') ;
     res.json(songs);
   } catch (error) { 
     res.status(500).json({ error: "An error occurred while fetching songs" });
@@ -18,14 +18,15 @@ router.get("/all", async (req, res) => {
 });
 router.get("/pending", async (req, res) => {
   try {
-    // Chỉ lấy các bài hát cần phê duyệt (approval: false)
-    const pendingSongs = await Song.find({ approval: false }, 'id title artist genre rhythm tone'); 
-    // Chỉ lấy các trường cần thiết
+    const pendingSongs = await Song.find({ approval: false }, 'id title artist genre rhythm tone') // Select necessary fields
+      .populate('artist', 'name') // Populate 'artist' with the artist's name
+      .exec(); // Execute the query
     res.json(pendingSongs);
   } catch (error) {
     res.status(500).json({ error: "An error occurred while fetching pending songs" });
   }
 });
+
 
 
 // Fetch songs by genre
@@ -38,7 +39,7 @@ router.get("/genre/:genreId", checkApproval, async (req, res) => {
   }
 
   try {
-    const songs = await Song.find({ genre: genreId,...req.approvalFilter });
+    const songs = await Song.find({ genre: genreId,...req.approvalFilter }).populate('artist', 'name') ;
     res.json(songs);
   } catch (error) {
     res.status(500).json({ error: "An error occurred while fetching songs" });
@@ -53,28 +54,42 @@ router.get("/rhythm/:rhythmId",checkApproval, async (req, res) => {
   }
 
   try {
-    const songs = await Song.find({ rhythm: rhythmId ,...req.approvalFilter });
+    const songs = await Song.find({ rhythm: rhythmId ,...req.approvalFilter }).populate('artist', 'name') ;
     res.json(songs);
   } catch (error) {
     res.status(500).json({ error: "An error occurred while fetching songs" });
   }
 });
-router.get("/artist/:name",checkApproval, async (req, res) => {
+router.get("/artist/:name", checkApproval, async (req, res) => {
   const { name } = req.params;
 
-  // Kiểm tra nếu name không rỗng
+  // Check if name is valid
   if (!name || !name.trim()) {
     return res.status(400).json({ error: "Invalid artist name" });
   }
 
   try {
-    const songs = await Song.find({ artist: name,...req.approvalFilter });
+    // Find the artist by name
+    const artist = await Artist.findOne({ name: name.trim() });
+
+    // If no artist found, return an error
+    if (!artist) {
+      return res.status(404).json({ error: "Artist not found" });
+    }
+
+    // Find songs by artist's ObjectId
+    const songs = await Song.find({ artist: artist._id, ...req.approvalFilter })
+      .populate('artist', 'name') // Populate artist field to get the name
+      .populate('genre', 'name');  // Optionally populate genre field if needed
+
     res.json(songs);
     console.log(songs);
   } catch (error) {
+    console.error('Error fetching songs:', error);
     res.status(500).json({ error: "An error occurred while fetching songs" });
   }
 });
+
 
 
 router.get('/search/:query', async (req, res) => {
@@ -85,12 +100,19 @@ router.get('/search/:query', async (req, res) => {
   }
 
   try {
-    const allSongs = await Song.find(); // Lấy tất cả bài hát từ cơ sở dữ liệu
+    const allSongs = await Song.find().populate("artist", "name");
 
+    // Chuẩn hoá dữ liệu: Thêm một trường 'artistNames' là chuỗi kết hợp các tên nghệ sĩ
+    const normalizedSongs = allSongs.map(song => ({
+      ...song.toObject(), // Chuyển sang object để thao tác dễ dàng
+      artistNames: song.artist.map(artist => artist.name).join(", "),
+    }));
     // Cấu hình Fuse.js
     const options = {
-      keys: ['title', 'lyrics.verse', 'comments.text'], // Các trường cần tìm kiếm
+      keys: ['title','artist.name', 'lyrics.verse', 'comments.text'], // Các trường cần tìm kiếm
       threshold: 0.3, // Mức độ gần giống (0.0: chính xác, 1.0: chấp nhận mọi kết quả)
+      caseSensitive: false, // Không phân biệt chữ hoa chữ thường
+      ignoreLocation: true,
     };
 
     const fuse = new Fuse(allSongs, options);
@@ -109,7 +131,7 @@ router.get('/user/:userId/posted', checkApproval, async (req, res) => {
 
   try {
     // Tìm tất cả bài hát của người dùng có status là true
-    const songs = await Song.find({ userId: userId, status: true, ...req.approvalFilter });
+    const songs = await Song.find({ userId: userId, status: true, ...req.approvalFilter }).populate('artist', 'name') ;
     res.status(200).json(songs);
   } catch (error) {
     console.error('Error fetching posted songs:', error);
@@ -191,7 +213,7 @@ router.get('/user/:userId/favorites', async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const favoriteSongs = await Song.find({ _id: { $in: user.favorites } });
+    const favoriteSongs = await Song.find({ _id: { $in: user.favorites } }).populate('artist', 'name') ;
     res.status(200).json(favoriteSongs);
   } catch (error) {
     console.error('Error fetching favorite songs:', error);
@@ -204,25 +226,29 @@ router.get('/user/:userId/favorites', async (req, res) => {
 router.get('/popular', checkApproval, async (req, res) => {
   try {
     const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1); // First day of the current month
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0); // Last day of the current month
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1); // Ngày đầu tiên của tháng hiện tại
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0); // Ngày cuối cùng của tháng hiện tại
 
     console.log('Start of Month:', startOfMonth);
     console.log('End of Month:', endOfMonth);
 
-    // Combine the approval filter with the date range filter
+    // Kết hợp bộ lọc với viewMonth thay vì viewCount
     const filter = {
-      createdAt: { $gte: startOfMonth, $lte: endOfMonth },
-      ...req.approvalFilter,
+      viewMonth: { $gte: 1 }, // Các bài hát có ít nhất 1 lượt xem trong tháng
+      createdAt: { $lte: endOfMonth }, // Đảm bảo bài hát đã được tạo trước cuối tháng
+      ...req.approvalFilter, // Bao gồm bộ lọc từ middleware `checkApproval`
     };
 
-    // Fetch popular songs created in the current month and sort by view count
+    // Tìm các bài hát phổ biến theo viewMonth
     const popularSongs = await Song.find(filter)
-      .sort({ viewCount: -1 })
-      .limit(10);
+      .populate('artist', 'name') // Populate thông tin artist, chỉ lấy trường name
+      .populate('genre', 'name')  // Populate thông tin genre, chỉ lấy trường name
+      .sort({ viewMonth: -1 })    // Sắp xếp theo viewMonth giảm dần
+      .limit(10);                 // Giới hạn 10 bài hát phổ biến nhất
 
     console.log('Popular Songs:', popularSongs);
 
+    // Trả về danh sách các bài hát phổ biến
     res.status(200).json(popularSongs);
   } catch (error) {
     console.error('Error fetching popular songs:', error);
@@ -232,13 +258,17 @@ router.get('/popular', checkApproval, async (req, res) => {
 
 
 
+
+
 // Fetch songs uploaded in the last 7 days
 router.get('/recent',checkApproval, async (req, res) => {
   const oneWeekAgo = new Date();
   oneWeekAgo.setDate(oneWeekAgo.getDate() - 7); // Lấy thời gian cách đây 7 ngày
 
   try {
-    const recentSongs = await Song.find({ createdAt: { $gte: oneWeekAgo },...req.approvalFilter  }).sort({ createdAt: -1 }); // Sắp xếp mới nhất ở trên cùng
+    const recentSongs = await Song.find({ createdAt: { $gte: oneWeekAgo },...req.approvalFilter  })
+    .populate('artist', 'name') 
+    .sort({ createdAt: -1 }); // Sắp xếp mới nhất ở trên cùng
     res.status(200).json(recentSongs);
   } catch (error) {
     console.error('Error fetching recent songs:', error);

@@ -1,20 +1,28 @@
-const Role = require("../models/role");  // Đảm bảo bạn đã có model User
+  const Role = require("../models/role");  // Assuming you have a model named Role that stores user roles
 
-const checkAdmin = async (req, res, next) => {
-  try {
-    const userId = req.body.userId; // Lấy `userId` từ request body
-    const userRole = await Role.findOne({ userId }); // Tìm vai trò người dùng trong Role model
+  const checkAdmin = async (req, res, next) => {
+    try {
+      const userId = req.body.userId; // Assuming userId is sent in the request body
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
 
-    if (!userRole) {
-      return res.status(403).send({ message: 'User role not found.' });
+      // Check if the user exists and retrieve their role
+      const userRole = await Role.findOne({ userId }); // Assuming Role model contains userId and role
+      console.log(userRole);
+      if (!userRole) {
+        return res.status(403).json({ message: "User role not found" });
+      }
+
+      // Set isAdmin to true if the role is admin, else false
+      req.isAdmin = userRole.role === "admin"; 
+
+      next(); // Always proceed to the next middleware or route handler
+
+    } catch (error) {
+      console.error("Error in checkAdmin middleware:", error);
+      return res.status(500).json({ message: "Internal server error while checking admin access." });
     }
+  };
 
-    // Kiểm tra nếu là admin
-    req.isAdmin = userRole.role === 'admin'; // Đánh dấu trạng thái admin
-    next(); // Tiếp tục xử lý request
-  } catch (error) {
-    console.error(error);
-    return res.status(500).send({ message: 'Internal server error.' });
-  }
-};
-module.exports = checkAdmin;
+  module.exports = checkAdmin;

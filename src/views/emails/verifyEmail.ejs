@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Verification</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    p {
+      font-size: 16px;
+      line-height: 1.5;
+      color: #333;
+    }
+    a {
+      color: #3498db;
+      text-decoration: none;
+    }
+    footer {
+      font-size: 12px;
+      color: #95a5a6;
+      margin-top: 20px;
+      text-align: center;
+    }
+    .footer-links a {
+      color: #95a5a6;
+      text-decoration: none;
+    }
+    .footer-links {
+      margin-top: 10px;
+    }
+    .footer-year {
+      margin-top: 10px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 20px;
+      background-color: #3498db;
+      color: #fff;
+      font-size: 16px;
+      text-align: center;
+      border-radius: 5px;
+      text-decoration: none;
+      margin-top: 20px;
+    }
+    .btn:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Account Verification</h1>
+
+    <% if (status === 'success') { %>
+      <p>Your email has been successfully verified! You can now log in and start using your account.</p>
+    <% } else if (status === 'pending') { %>
+      <p>Thank you for signing up! Please click the link below to verify your email address.</p>
+      <p>If you did not sign up, please ignore this email.</p>
+    <% } else { %>
+      <p style="color: #e74c3c;">There was an issue with your email verification. Please try again later or contact support.</p>
+    <% } %>
+
+    <p>
+      <a href="<%= url %>" class="btn">Click here to login</a>
+    </p>
+
+    <p>Best regards,</p>
+    <p>The [Your Company Name] Team</p>
+
+    <footer>
+      <div class="footer-links">
+        <p>If you have any questions, feel free to contact us at <a href="mailto:support@yourcompany.com">support@yourcompany.com</a>.</p>
+      </div>
+      <div class="footer-year">
+        <p>© [Year] [Your Company Name]. All rights reserved.</p>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

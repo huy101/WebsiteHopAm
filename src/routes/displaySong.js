@@ -6,25 +6,36 @@ const Genre = require('../models/genre');
 const Rhythm = require('../models/rhythm');
 
 // Lấy thông tin bài hát và tăng viewCount
-router.get('/:id', async (req, res) => {
-    const id = req.params.id;
-    console.log(id);
 
+router.get('/:id', async (req, res) => {
+    const { id } = req.params; // Trích xuất id từ params
+
+    // Kiểm tra xem ID có hợp lệ hay không
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ message: 'ID không hợp lệ' });
     }
 
     try {
+        // Tìm và cập nhật viewCount và viewMonth
         const song = await Song.findByIdAndUpdate(
             id,
-            { $inc: { viewCount: 1 } },
-            { new: true }
-        ).populate('rhythm', 'name')
-         .populate('genre', 'name');
-        return res.status(200).send({ song });
+            { $inc: { viewCount: 1, viewMonth: 1 } }, // Tăng cả viewCount và viewMonth
+            { new: true } // Lấy document đã cập nhật
+        )
+        .populate('rhythm', 'name') // Populate trường rhythm và chỉ lấy name
+        .populate('genre', 'name') // Populate trường genre và chỉ lấy name
+        .populate('artist', 'name'); // Populate trường artist và chỉ lấy name
+
+        // Nếu không tìm thấy bài hát
+        if (!song) {
+            return res.status(404).json({ message: 'Không tìm thấy bài hát' });
+        }
+
+        // Trả về bài hát đã cập nhật
+        return res.status(200).json({ song });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Có lỗi xảy ra' });
+        console.error('Lỗi:', error);
+        return res.status(500).json({ message: 'Có lỗi xảy ra' });
     }
 });
 

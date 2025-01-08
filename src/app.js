@@ -43,6 +43,7 @@ app.use("/login", login);
 app.use("/song", addSong);
 app.use("/test", test);
 app.use("/users", userRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/list", list);
 app.use('/comment',addComment)
